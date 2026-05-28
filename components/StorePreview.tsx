@@ -345,7 +345,7 @@ function ImageBlock({
   square?: boolean;
   height?: number;
 }) {
-  const isUrl = /^(https?:\/\/|\/uploads\/)/.test(value || "");
+  const isUrl = /^(https?:\/\/|\/uploads\/|data:image\/)/.test(value || "");
   if (isUrl) {
     return (
       <div className={full ? "preview-hero-image" : undefined} style={!full ? { margin: "0 auto" } : undefined}>

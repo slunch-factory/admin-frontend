@@ -20,8 +20,19 @@ async function readJson<T>(file: string, fallback: T): Promise<T> {
 }
 
 async function writeJson<T>(file: string, value: T) {
-  await ensureDir();
-  await fs.writeFile(file, JSON.stringify(value, null, 2), "utf-8");
+  // Vercel / serverless = read-only filesystem at runtime. Silently skip so
+  // save APIs return 200 instead of 500 — edits live in memory for the React
+  // session but won't persist across reloads. Swap for Vercel Postgres / KV
+  // / Blob or an external backend for real persistence.
+  if (process.env.VERCEL || process.env.READONLY_FS) {
+    return;
+  }
+  try {
+    await ensureDir();
+    await fs.writeFile(file, JSON.stringify(value, null, 2), "utf-8");
+  } catch (err) {
+    console.warn("[store] writeJson failed, edit not persisted:", err);
+  }
 }
 
 export async function listStoreProducts(): Promise<StoreProduct[]> {

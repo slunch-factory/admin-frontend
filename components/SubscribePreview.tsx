@@ -25,7 +25,7 @@ function parseIngredients(s: string): Ingredient[] {
  * details panel right.
  */
 export function SubscribePreview({ product }: Props) {
-  const isUrl = /^(https?:\/\/|\/uploads\/)/.test(product.image_url || "");
+  const isUrl = /^(https?:\/\/|\/uploads\/|data:image\/)/.test(product.image_url || "");
   const ingredients = parseIngredients(product.ingredients);
 
   return (

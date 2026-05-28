@@ -25,27 +25,32 @@ export default function SubscribePage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Stable — see comment in store/page.tsx (avoids infinite refetch loop)
   const loadProducts = useCallback(async () => {
     setLoading(true);
     try {
       const list = await fetchSubscribeProducts();
       setProducts(list);
-      if (list.length > 0 && selectedId == null) {
-        setSelectedId(list[0].id);
-        setDraft(list[0]);
-        setOriginalId(list[0].id);
-        setIsCreating(false);
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "불러오기 실패");
     } finally {
       setLoading(false);
     }
-  }, [selectedId]);
+  }, []);
 
   useEffect(() => {
     void loadProducts();
   }, [loadProducts]);
+
+  useEffect(() => {
+    if (selectedId == null && products.length > 0) {
+      const first = products[0];
+      setSelectedId(first.id);
+      setDraft(first);
+      setOriginalId(first.id);
+      setIsCreating(false);
+    }
+  }, [products, selectedId]);
 
   function selectProduct(id: number) {
     const p = products.find((x) => x.id === id);

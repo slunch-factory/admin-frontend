@@ -110,7 +110,7 @@ function ImageField({ value, onChange }: { value: string; onChange: (v: string) 
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const isImageRef = /^(https?:\/\/|\/uploads\/)/.test(value);
+  const isImageRef = /^(https?:\/\/|\/uploads\/|data:image\/)/.test(value);
   const isPromptText = value && !isImageRef;
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {

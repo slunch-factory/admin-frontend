@@ -26,27 +26,35 @@ export default function StorePage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // loadProducts must be stable — depending on selectedId here caused an
+  // infinite refetch loop (loadProducts identity changes after setSelectedId
+  // inside the effect, retriggering the effect, retriggering the fetch).
   const loadProducts = useCallback(async () => {
     setLoading(true);
     try {
       const list = await fetchStoreProducts();
       setProducts(list);
-      if (list.length > 0 && !selectedId) {
-        setSelectedId(list[0].product_id);
-        setDraft(list[0]);
-        setOriginalId(list[0].product_id);
-        setIsCreating(false);
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "불러오기 실패");
     } finally {
       setLoading(false);
     }
-  }, [selectedId]);
+  }, []);
 
   useEffect(() => {
     void loadProducts();
   }, [loadProducts]);
+
+  // Auto-select first product when nothing is selected yet
+  useEffect(() => {
+    if (selectedId == null && products.length > 0) {
+      const first = products[0];
+      setSelectedId(first.product_id);
+      setDraft(first);
+      setOriginalId(first.product_id);
+      setIsCreating(false);
+    }
+  }, [products, selectedId]);
 
   function selectProduct(id: string) {
     const p = products.find((x) => x.product_id === id);
