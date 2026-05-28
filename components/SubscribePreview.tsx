@@ -30,7 +30,7 @@ export function SubscribePreview({ product }: Props) {
 
   return (
     <div style={S.outer}>
-      <div style={S.card}>
+      <div className="sub-card-grid" style={S.card}>
         {/* LEFT: brand panel */}
         <div style={S.left}>
           <div>

@@ -11,25 +11,31 @@ type Props = { product: StoreProduct };
 export function StorePreview({ product }: Props) {
   return (
     <div className="preview-wrapper">
-      <ImageBlock value={product.hero_image} fallback="히어로 이미지 영역 (1:3 비율)" full />
-      <ImageBlock value={product.feature_image} fallback="디쉬 항공샷 이미지" full />
+      <div data-section-id="hero">
+        <ImageBlock value={product.hero_image} fallback="히어로 이미지 영역 (1:3 비율)" full />
+        <ImageBlock value={product.feature_image} fallback="디쉬 항공샷 이미지" full />
+        <Section label="1" tone="white">
+          <Title text={product.hero_title} />
+          <Text text={product.hero_desc} />
+        </Section>
+      </div>
 
-      <Section label="1" tone="white">
-        <Title text={product.hero_title} />
-        <Text text={product.hero_desc} />
-      </Section>
+      <div data-section-id="intro">
+        <Section label="2" tone="sand">
+          <Subtitle text={product.intro_label} />
+          <Title text={product.intro_title} />
+          <Text text={product.intro_body} />
+        </Section>
+      </div>
 
-      <Section label="2" tone="sand">
-        <Subtitle text={product.intro_label} />
-        <Title text={product.intro_title} />
-        <Text text={product.intro_body} />
-      </Section>
+      <div data-section-id="feature">
+        <Section label="3" tone="white">
+          <Title text={product.feature_title} />
+          <Text text={product.feature_body} />
+        </Section>
+      </div>
 
-      <Section label="3" tone="white">
-        <Title text={product.feature_title} />
-        <Text text={product.feature_body} />
-      </Section>
-
+      <div data-section-id="process">
       <Section label="4" tone="lime">
         <ImageBlock value={product.process_image} fallback="제조 공정 이미지" height={480} />
         <Title text={product.process_title} margin />
@@ -62,6 +68,9 @@ export function StorePreview({ product }: Props) {
         </div>
       </Section>
 
+      </div>
+
+      <div data-section-id="ingredient">
       <Section label="5" tone="gray">
         <ImageBlock value={product.ingredient_image} fallback="재료 그리드 배너 이미지" height={480} />
         <Title text={product.ingredient_title} margin />
@@ -75,6 +84,9 @@ export function StorePreview({ product }: Props) {
         </div>
       </Section>
 
+      </div>
+
+      <div data-section-id="cert">
       <Section label="6" tone="gray">
         <Subtitle text={product.cert_subtitle} />
         <Title text={product.cert_title} />
@@ -99,6 +111,9 @@ export function StorePreview({ product }: Props) {
         </div>
       </Section>
 
+      </div>
+
+      <div data-section-id="heritage">
       <ImageBlock value={product.heritage_image} fallback="브랜드 스토리 이미지 (3:1)" full />
 
       <Section label="7" tone="gray">
@@ -125,6 +140,9 @@ export function StorePreview({ product }: Props) {
         </div>
       </Section>
 
+      </div>
+
+      <div data-section-id="serving">
       <Section label="8" tone="white">
         <Title text={product.serving_title} />
         <Text text={product.serving_subtitle} />
@@ -151,6 +169,9 @@ export function StorePreview({ product }: Props) {
         </div>
       </Section>
 
+      </div>
+
+      <div data-section-id="strength">
       <Section label="9" tone="sand">
         <Title text={product.strength_summary_title} />
         <Text text={product.strength_quote} />
@@ -188,16 +209,20 @@ export function StorePreview({ product }: Props) {
         </div>
       </Section>
 
-      <Section label="10" tone="white">
-        <ImageBlock value={product.reveal_image} fallback="리빌 이미지" height={480} />
-        <div style={{ fontSize: 26, fontWeight: 700, margin: "24px 0 14px", color: "#250a00" }}>
-          {nl2br(product.reveal_quote)}
-        </div>
-        <Text text={product.reveal_body} />
-      </Section>
+      </div>
 
-      <ImageBlock value={product.gathering_image} fallback="다같이 모여먹기 이미지 (5:4)" full />
+      <div data-section-id="reveal">
+        <Section label="10" tone="white">
+          <ImageBlock value={product.reveal_image} fallback="리빌 이미지" height={480} />
+          <div style={{ fontSize: 26, fontWeight: 700, margin: "24px 0 14px", color: "#250a00" }}>
+            {nl2br(product.reveal_quote)}
+          </div>
+          <Text text={product.reveal_body} />
+        </Section>
+        <ImageBlock value={product.gathering_image} fallback="다같이 모여먹기 이미지 (5:4)" full />
+      </div>
 
+      <div data-section-id="review">
       <Section label="11" tone="lime">
         <Title text={product.review_title} />
         <Text text={product.review_subtitle} />
@@ -214,6 +239,9 @@ export function StorePreview({ product }: Props) {
         </div>
       </Section>
 
+      </div>
+
+      <div data-section-id="qna">
       <Section label="12" tone="white">
         <Title text={product.qna_title} />
         <Text text={product.qna_subtitle} />
@@ -232,14 +260,20 @@ export function StorePreview({ product }: Props) {
         </div>
       </Section>
 
-      <ImageBlock value={product.ending_image} fallback="제품 엔딩샷" full />
+      </div>
 
-      <Section label="13" tone="white" align="left">
-        <div className="preview-info-header">
-          {product.info_제품명 || product.product_id}
-        </div>
-        <InfoGrid product={product} />
-      </Section>
+      <div data-section-id="ending">
+        <ImageBlock value={product.ending_image} fallback="제품 엔딩샷" full />
+      </div>
+
+      <div data-section-id="info">
+        <Section label="13" tone="white" align="left">
+          <div className="preview-info-header">
+            {product.info_제품명 || product.product_id}
+          </div>
+          <InfoGrid product={product} />
+        </Section>
+      </div>
     </div>
   );
 }

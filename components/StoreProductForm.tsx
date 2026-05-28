@@ -44,7 +44,11 @@ export function StoreProductForm({ product, sections, onChange }: Props) {
       {sections.map((section) => {
         const isOpen = openSections[section.id];
         return (
-          <div key={section.id} className={`form-section ${isOpen ? "open" : ""}`}>
+          <div
+            key={section.id}
+            className={`form-section ${isOpen ? "open" : ""}`}
+            data-section-id={section.id}
+          >
             <button
               type="button"
               onClick={() => toggle(section.id)}

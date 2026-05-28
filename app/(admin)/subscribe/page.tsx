@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { EditorNameModal } from "@/components/EditorNameModal";
 import { ProductSidebar } from "@/components/ProductSidebar";
-import { SplitPane } from "@/components/SplitPane";
 import { SubscribePreview } from "@/components/SubscribePreview";
 import { SubscribeProductForm } from "@/components/SubscribeProductForm";
 import {
@@ -25,6 +24,7 @@ export default function SubscribePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [viewport, setViewport] = useState<"desktop" | "mobile">("desktop");
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -169,51 +169,73 @@ export default function SubscribePage() {
               <span style={{ color: "var(--text-dim)" }}>수정 이력 없음</span>
             )}
           </div>
-          <div className="content">
-            <SplitPane
-              initialLeftPercent={50}
-              left={
-                <div className="pane-edit resizable" style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
-                  <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
-                    {loading && <div style={{ padding: 20 }}>불러오는 중...</div>}
-                    {error && (
-                      <div style={{ color: "var(--danger)", padding: 12, marginBottom: 12 }}>
-                        {error}
-                      </div>
-                    )}
-                    {!loading && !draft && (
-                      <div style={{ padding: 40, color: "var(--text-secondary)" }}>
-                        등록된 구독 메뉴가 없습니다. 좌측 &lsquo;추가&rsquo; 버튼으로 시작하세요.
-                      </div>
-                    )}
-                    {draft && <SubscribeProductForm product={draft} onChange={setDraft} />}
+          <div className="content split-fixed">
+            <div
+              className="pane-edit"
+              style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}
+            >
+              <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
+                {loading && <div style={{ padding: 20 }}>불러오는 중...</div>}
+                {error && (
+                  <div style={{ color: "var(--danger)", padding: 12, marginBottom: 12 }}>
+                    {error}
                   </div>
-                  <div className="pane-edit-footer">
-                    <button
-                      type="button"
-                      className="btn-save"
-                      onClick={() => setModalOpen(true)}
-                      disabled={!draft || !isDirty}
-                      title={!isDirty ? "변경사항이 없습니다" : undefined}
-                    >
-                      저장
-                    </button>
+                )}
+                {!loading && !draft && (
+                  <div style={{ padding: 40, color: "var(--text-secondary)" }}>
+                    등록된 구독 메뉴가 없습니다. 좌측 &lsquo;추가&rsquo; 버튼으로 시작하세요.
                   </div>
+                )}
+                {draft && <SubscribeProductForm product={draft} onChange={setDraft} />}
+              </div>
+              <div className="pane-edit-footer">
+                <button
+                  type="button"
+                  className="btn-save"
+                  onClick={() => setModalOpen(true)}
+                  disabled={!draft || !isDirty}
+                  title={!isDirty ? "변경사항이 없습니다" : undefined}
+                >
+                  저장
+                </button>
+              </div>
+            </div>
+            <div
+              className="pane-right"
+              style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}
+            >
+              <div className="pane-right-tabs">
+                <button className="pane-tab-btn active" type="button">
+                  미리보기
+                </button>
+                <div className="viewport-toggle">
+                  <button
+                    type="button"
+                    className={`viewport-btn ${viewport === "desktop" ? "active" : ""}`}
+                    onClick={() => setViewport("desktop")}
+                    aria-pressed={viewport === "desktop"}
+                  >
+                    💻 데스크톱
+                  </button>
+                  <button
+                    type="button"
+                    className={`viewport-btn ${viewport === "mobile" ? "active" : ""}`}
+                    onClick={() => setViewport("mobile")}
+                    aria-pressed={viewport === "mobile"}
+                  >
+                    📱 모바일
+                  </button>
                 </div>
-              }
-              right={
-                <div className="pane-right resizable" style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
-                  <div className="pane-right-tabs">
-                    <button className="pane-tab-btn active" type="button">
-                      미리보기
-                    </button>
-                  </div>
-                  <div className="pane-tab-content active" style={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}>
-                    {draft && <SubscribePreview product={draft} />}
-                  </div>
+              </div>
+              <div
+                className={`pane-tab-content active preview-frame preview-${viewport}`}
+                style={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}
+              >
+                <div className="preview-content">
+                  {draft && <SubscribePreview product={draft} />}
                 </div>
-              }
-            />
+              </div>
+            </div>
           </div>
         </div>
       </div>

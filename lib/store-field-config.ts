@@ -225,7 +225,7 @@ export const STORE_SECTIONS: SectionDef[] = [
   },
   {
     id: "info",
-    title: "⑭ 식품 정보 (라벨)",
+    title: "식품 정보 (라벨)",
     fields: [
       { key: "info_제품명", label: "제품명", labelEn: "INFO 제품명", type: "text" },
       { key: "info_원료명", label: "원료명", labelEn: "INFO 원료명", type: "textarea" },

@@ -1,9 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EditorNameModal } from "@/components/EditorNameModal";
 import { ProductSidebar } from "@/components/ProductSidebar";
-import { SplitPane } from "@/components/SplitPane";
 import { StorePreview } from "@/components/StorePreview";
 import { StoreProductForm } from "@/components/StoreProductForm";
 import {
@@ -26,9 +25,12 @@ export default function StorePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [viewport, setViewport] = useState<"desktop" | "mobile">("desktop");
 
-  // loadProducts must be stable — depending on selectedId caused an
-  // infinite refetch loop. Auto-select is a separate effect below.
+  const editScrollRef = useRef<HTMLDivElement>(null);
+  const previewScrollRef = useRef<HTMLDivElement>(null);
+  const syncingRef = useRef(false);
+
   const loadProducts = useCallback(async () => {
     setLoading(true);
     try {
@@ -56,8 +58,6 @@ export default function StorePage() {
     }
   }, [products, selectedId]);
 
-  // dirty = the current draft differs from the last server-saved snapshot.
-  // Saving a brand-new (unsaved) product is always allowed.
   const isDirty = useMemo(() => {
     if (!draft) return false;
     if (isCreating) return true;
@@ -65,7 +65,6 @@ export default function StorePage() {
   }, [draft, isCreating, savedSnapshot]);
 
   function selectProduct(id: string) {
-    // If user navigates away from an unsaved new product, drop the temp row.
     if (isCreating && draft) {
       setProducts((prev) => prev.filter((p) => p.product_id !== draft.product_id));
     }
@@ -77,6 +76,9 @@ export default function StorePage() {
     setIsCreating(false);
     setSavedSnapshot(JSON.stringify(p));
     setError(null);
+    // Reset both panes to top when switching products
+    editScrollRef.current?.scrollTo({ top: 0 });
+    previewScrollRef.current?.scrollTo({ top: 0 });
   }
 
   function addProduct() {
@@ -85,7 +87,6 @@ export default function StorePage() {
       ...SEED_STORE_PRODUCT,
       product_id: tempId,
     };
-    // Prepend to the sidebar so the new item shows at the very top.
     setProducts((prev) => [newProduct, ...prev]);
     setDraft(newProduct);
     setSelectedId(tempId);
@@ -99,8 +100,6 @@ export default function StorePage() {
     if (!window.confirm(`'${selectedId}'을(를) 삭제하시겠습니까?`)) return;
     try {
       await deleteStoreProductApi(selectedId);
-      // Local update — on Vercel the server can't actually delete from disk,
-      // but the UI should still reflect the change.
       setProducts((prev) => prev.filter((p) => p.product_id !== selectedId));
       setSelectedId(null);
       setDraft(null);
@@ -117,7 +116,6 @@ export default function StorePage() {
       let saved: StoreProduct;
       if (isCreating) {
         saved = await createStoreProduct(draft, editorName);
-        // Replace the temp row with the saved row, at the top of the list.
         setProducts((prev) => [
           saved,
           ...prev.filter((p) => p.product_id !== draft.product_id),
@@ -150,6 +148,44 @@ export default function StorePage() {
     }
   }
 
+  /**
+   * Sync preview scroll to the topmost visible section in the edit pane.
+   * Sections are tagged with matching `data-section-id` on both sides.
+   */
+  function handleEditScroll() {
+    if (syncingRef.current) return;
+    const editEl = editScrollRef.current;
+    const previewEl = previewScrollRef.current;
+    if (!editEl || !previewEl) return;
+
+    const sections = Array.from(
+      editEl.querySelectorAll<HTMLElement>("[data-section-id]"),
+    );
+    if (sections.length === 0) return;
+
+    // Find the last section whose top is at or above the edit scroll position
+    const scrollTop = editEl.scrollTop + 8;
+    let current = sections[0];
+    for (const s of sections) {
+      if (s.offsetTop <= scrollTop) current = s;
+      else break;
+    }
+    const id = current.dataset.sectionId;
+    if (!id) return;
+
+    const target = previewEl.querySelector<HTMLElement>(
+      `[data-section-id="${id}"]`,
+    );
+    if (!target) return;
+
+    syncingRef.current = true;
+    previewEl.scrollTop = target.offsetTop;
+    // Release the sync lock after the browser settles
+    window.requestAnimationFrame(() => {
+      syncingRef.current = false;
+    });
+  }
+
   const sections = STORE_SECTIONS;
 
   return (
@@ -179,57 +215,81 @@ export default function StorePage() {
             )}
           </div>
 
-          <div className="content">
-            <SplitPane
-              initialLeftPercent={50}
-              left={
-                <div className="pane-edit resizable" style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
-                  <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
-                    {loading && <div style={{ padding: 20 }}>불러오는 중...</div>}
-                    {error && (
-                      <div style={{ color: "var(--danger)", padding: 12, marginBottom: 12 }}>
-                        {error}
-                      </div>
-                    )}
-                    {!loading && !draft && products.length === 0 && (
-                      <div style={{ padding: 40, color: "var(--text-secondary)" }}>
-                        등록된 제품이 없습니다. 좌측 &lsquo;추가&rsquo; 버튼으로 첫 제품을 만들어 주세요.
-                      </div>
-                    )}
-                    {draft && (
-                      <StoreProductForm
-                        product={draft}
-                        sections={sections}
-                        onChange={setDraft}
-                      />
-                    )}
+          <div className="content split-fixed">
+            <div
+              className="pane-edit"
+              style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}
+            >
+              <div
+                ref={editScrollRef}
+                onScroll={handleEditScroll}
+                style={{ flex: 1, overflowY: "auto", padding: 20 }}
+              >
+                {loading && <div style={{ padding: 20 }}>불러오는 중...</div>}
+                {error && (
+                  <div style={{ color: "var(--danger)", padding: 12, marginBottom: 12 }}>
+                    {error}
                   </div>
-                  <div className="pane-edit-footer">
-                    <button
-                      type="button"
-                      className="btn-save"
-                      onClick={() => setModalOpen(true)}
-                      disabled={!draft || !isDirty}
-                      title={!isDirty ? "변경사항이 없습니다" : undefined}
-                    >
-                      저장
-                    </button>
+                )}
+                {!loading && !draft && products.length === 0 && (
+                  <div style={{ padding: 40, color: "var(--text-secondary)" }}>
+                    등록된 제품이 없습니다. 좌측 &lsquo;추가&rsquo; 버튼으로 첫 제품을 만들어 주세요.
                   </div>
+                )}
+                {draft && (
+                  <StoreProductForm product={draft} sections={sections} onChange={setDraft} />
+                )}
+              </div>
+              <div className="pane-edit-footer">
+                <button
+                  type="button"
+                  className="btn-save"
+                  onClick={() => setModalOpen(true)}
+                  disabled={!draft || !isDirty}
+                  title={!isDirty ? "변경사항이 없습니다" : undefined}
+                >
+                  저장
+                </button>
+              </div>
+            </div>
+
+            <div
+              className="pane-right"
+              style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}
+            >
+              <div className="pane-right-tabs">
+                <button className="pane-tab-btn active" type="button">
+                  미리보기
+                </button>
+                <div className="viewport-toggle">
+                  <button
+                    type="button"
+                    className={`viewport-btn ${viewport === "desktop" ? "active" : ""}`}
+                    onClick={() => setViewport("desktop")}
+                    aria-pressed={viewport === "desktop"}
+                  >
+                    💻 데스크톱
+                  </button>
+                  <button
+                    type="button"
+                    className={`viewport-btn ${viewport === "mobile" ? "active" : ""}`}
+                    onClick={() => setViewport("mobile")}
+                    aria-pressed={viewport === "mobile"}
+                  >
+                    📱 모바일
+                  </button>
                 </div>
-              }
-              right={
-                <div className="pane-right resizable" style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
-                  <div className="pane-right-tabs">
-                    <button className="pane-tab-btn active" type="button">
-                      미리보기
-                    </button>
-                  </div>
-                  <div className="pane-tab-content active" style={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}>
-                    {draft && <StorePreview product={draft} />}
-                  </div>
+              </div>
+              <div
+                ref={previewScrollRef}
+                className={`pane-tab-content active preview-frame preview-${viewport}`}
+                style={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}
+              >
+                <div className="preview-content">
+                  {draft && <StorePreview product={draft} />}
                 </div>
-              }
-            />
+              </div>
+            </div>
           </div>
         </div>
       </div>
