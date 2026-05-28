@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 const SESSION_COOKIE = "slunch_admin_session";
 export const ADMIN_USERNAME = process.env.ADMIN_USERNAME ?? "admin";
-export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "slunch2025";
+export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "1234";
 
 export async function setAdminSession() {
   const jar = await cookies();
