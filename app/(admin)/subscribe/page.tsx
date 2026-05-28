@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { EditorNameModal } from "@/components/EditorNameModal";
 import { ProductSidebar } from "@/components/ProductSidebar";
 import { SplitPane } from "@/components/SplitPane";
@@ -21,11 +21,11 @@ export default function SubscribePage() {
   const [draft, setDraft] = useState<SubscribeProduct | null>(null);
   const [originalId, setOriginalId] = useState<number | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [savedSnapshot, setSavedSnapshot] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Stable — see comment in store/page.tsx (avoids infinite refetch loop)
   const loadProducts = useCallback(async () => {
     setLoading(true);
     try {
@@ -49,16 +49,27 @@ export default function SubscribePage() {
       setDraft(first);
       setOriginalId(first.id);
       setIsCreating(false);
+      setSavedSnapshot(JSON.stringify(first));
     }
   }, [products, selectedId]);
 
+  const isDirty = useMemo(() => {
+    if (!draft) return false;
+    if (isCreating) return true;
+    return savedSnapshot !== JSON.stringify(draft);
+  }, [draft, isCreating, savedSnapshot]);
+
   function selectProduct(id: number) {
+    if (isCreating && draft) {
+      setProducts((prev) => prev.filter((p) => p.id !== draft.id));
+    }
     const p = products.find((x) => x.id === id);
     if (!p) return;
     setSelectedId(id);
     setDraft(p);
     setOriginalId(id);
     setIsCreating(false);
+    setSavedSnapshot(JSON.stringify(p));
     setError(null);
   }
 
@@ -71,10 +82,12 @@ export default function SubscribePage() {
       code: `NEW${nextId}`,
       name: "새 구독 메뉴",
     };
+    setProducts((prev) => [newProduct, ...prev]);
     setDraft(newProduct);
     setSelectedId(nextId);
     setOriginalId(null);
     setIsCreating(true);
+    setSavedSnapshot(null);
   }
 
   async function deleteProduct() {
@@ -82,10 +95,11 @@ export default function SubscribePage() {
     if (!window.confirm(`#${selectedId} 메뉴를 삭제하시겠습니까?`)) return;
     try {
       await deleteSubscribeProductApi(selectedId);
+      setProducts((prev) => prev.filter((p) => p.id !== selectedId));
       setSelectedId(null);
       setDraft(null);
       setOriginalId(null);
-      await loadProducts();
+      setSavedSnapshot(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "삭제 실패");
     }
@@ -93,23 +107,40 @@ export default function SubscribePage() {
 
   async function handleSave(editorName: string) {
     if (!draft) return;
-    if (isCreating) {
-      const saved = await createSubscribeProduct(draft, editorName);
-      setIsCreating(false);
+    try {
+      let saved: SubscribeProduct;
+      if (isCreating) {
+        saved = await createSubscribeProduct(draft, editorName);
+        setProducts((prev) => [
+          saved,
+          ...prev.filter((p) => p.id !== draft.id),
+        ]);
+        setIsCreating(false);
+      } else if (originalId != null) {
+        if (originalId !== draft.id) {
+          saved = await createSubscribeProduct(draft, editorName);
+          await deleteSubscribeProductApi(originalId);
+          setProducts((prev) => [
+            saved,
+            ...prev.filter((p) => p.id !== originalId),
+          ]);
+        } else {
+          saved = await updateSubscribeProduct(originalId, draft, editorName);
+          setProducts((prev) =>
+            prev.map((p) => (p.id === originalId ? saved : p)),
+          );
+        }
+      } else {
+        return;
+      }
       setSelectedId(saved.id);
       setOriginalId(saved.id);
       setDraft(saved);
-    } else if (originalId != null) {
-      if (originalId !== draft.id) {
-        await createSubscribeProduct(draft, editorName);
-        await deleteSubscribeProductApi(originalId);
-      } else {
-        await updateSubscribeProduct(originalId, draft, editorName);
-      }
-      setSelectedId(draft.id);
-      setOriginalId(draft.id);
+      setSavedSnapshot(JSON.stringify(saved));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "저장 실패");
+      throw err;
     }
-    await loadProducts();
   }
 
   return (
@@ -162,7 +193,8 @@ export default function SubscribePage() {
                       type="button"
                       className="btn-save"
                       onClick={() => setModalOpen(true)}
-                      disabled={!draft}
+                      disabled={!draft || !isDirty}
+                      title={!isDirty ? "변경사항이 없습니다" : undefined}
                     >
                       저장
                     </button>

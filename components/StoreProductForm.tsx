@@ -27,7 +27,12 @@ export function StoreProductForm({ product, sections, onChange }: Props) {
   return (
     <div className="store-form">
       <div className="form-field">
-        <div className="form-label-en">PRODUCT ID</div>
+        <div className="form-label-row">
+          <span className="form-label-en">PRODUCT NAME</span>
+          <span style={{ fontSize: 11, color: "var(--text-dim)" }}>
+            메뉴명 / 사이드바 표시명
+          </span>
+        </div>
         <input
           type="text"
           value={product.product_id}

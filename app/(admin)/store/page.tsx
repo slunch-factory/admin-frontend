@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { EditorNameModal } from "@/components/EditorNameModal";
 import { ProductSidebar } from "@/components/ProductSidebar";
 import { SplitPane } from "@/components/SplitPane";
@@ -22,13 +22,13 @@ export default function StorePage() {
   const [draft, setDraft] = useState<StoreProduct | null>(null);
   const [originalId, setOriginalId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [savedSnapshot, setSavedSnapshot] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // loadProducts must be stable — depending on selectedId here caused an
-  // infinite refetch loop (loadProducts identity changes after setSelectedId
-  // inside the effect, retriggering the effect, retriggering the fetch).
+  // loadProducts must be stable — depending on selectedId caused an
+  // infinite refetch loop. Auto-select is a separate effect below.
   const loadProducts = useCallback(async () => {
     setLoading(true);
     try {
@@ -45,7 +45,6 @@ export default function StorePage() {
     void loadProducts();
   }, [loadProducts]);
 
-  // Auto-select first product when nothing is selected yet
   useEffect(() => {
     if (selectedId == null && products.length > 0) {
       const first = products[0];
@@ -53,28 +52,46 @@ export default function StorePage() {
       setDraft(first);
       setOriginalId(first.product_id);
       setIsCreating(false);
+      setSavedSnapshot(JSON.stringify(first));
     }
   }, [products, selectedId]);
 
+  // dirty = the current draft differs from the last server-saved snapshot.
+  // Saving a brand-new (unsaved) product is always allowed.
+  const isDirty = useMemo(() => {
+    if (!draft) return false;
+    if (isCreating) return true;
+    return savedSnapshot !== JSON.stringify(draft);
+  }, [draft, isCreating, savedSnapshot]);
+
   function selectProduct(id: string) {
+    // If user navigates away from an unsaved new product, drop the temp row.
+    if (isCreating && draft) {
+      setProducts((prev) => prev.filter((p) => p.product_id !== draft.product_id));
+    }
     const p = products.find((x) => x.product_id === id);
     if (!p) return;
     setSelectedId(id);
     setDraft(p);
     setOriginalId(p.product_id);
     setIsCreating(false);
+    setSavedSnapshot(JSON.stringify(p));
     setError(null);
   }
 
   function addProduct() {
+    const tempId = `새 제품 ${Date.now()}`;
     const newProduct: StoreProduct = {
       ...SEED_STORE_PRODUCT,
-      product_id: `새 제품 ${Date.now()}`,
+      product_id: tempId,
     };
+    // Prepend to the sidebar so the new item shows at the very top.
+    setProducts((prev) => [newProduct, ...prev]);
     setDraft(newProduct);
-    setSelectedId(newProduct.product_id);
+    setSelectedId(tempId);
     setOriginalId(null);
     setIsCreating(true);
+    setSavedSnapshot(null);
   }
 
   async function deleteProduct() {
@@ -82,10 +99,13 @@ export default function StorePage() {
     if (!window.confirm(`'${selectedId}'을(를) 삭제하시겠습니까?`)) return;
     try {
       await deleteStoreProductApi(selectedId);
+      // Local update — on Vercel the server can't actually delete from disk,
+      // but the UI should still reflect the change.
+      setProducts((prev) => prev.filter((p) => p.product_id !== selectedId));
       setSelectedId(null);
       setDraft(null);
       setOriginalId(null);
-      await loadProducts();
+      setSavedSnapshot(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "삭제 실패");
     }
@@ -93,27 +113,43 @@ export default function StorePage() {
 
   async function handleSave(editorName: string) {
     if (!draft) return;
-    if (isCreating) {
-      const saved = await createStoreProduct(draft, editorName);
-      setIsCreating(false);
+    try {
+      let saved: StoreProduct;
+      if (isCreating) {
+        saved = await createStoreProduct(draft, editorName);
+        // Replace the temp row with the saved row, at the top of the list.
+        setProducts((prev) => [
+          saved,
+          ...prev.filter((p) => p.product_id !== draft.product_id),
+        ]);
+        setIsCreating(false);
+      } else if (originalId) {
+        if (originalId !== draft.product_id) {
+          saved = await createStoreProduct(draft, editorName);
+          await deleteStoreProductApi(originalId);
+          setProducts((prev) => [
+            saved,
+            ...prev.filter((p) => p.product_id !== originalId),
+          ]);
+        } else {
+          saved = await updateStoreProduct(originalId, draft, editorName);
+          setProducts((prev) =>
+            prev.map((p) => (p.product_id === originalId ? saved : p)),
+          );
+        }
+      } else {
+        return;
+      }
       setSelectedId(saved.product_id);
       setOriginalId(saved.product_id);
       setDraft(saved);
-    } else if (originalId) {
-      // product_id might have changed; if so, delete old then create new
-      if (originalId !== draft.product_id) {
-        await createStoreProduct(draft, editorName);
-        await deleteStoreProductApi(originalId);
-      } else {
-        await updateStoreProduct(originalId, draft, editorName);
-      }
-      setSelectedId(draft.product_id);
-      setOriginalId(draft.product_id);
+      setSavedSnapshot(JSON.stringify(saved));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "저장 실패");
+      throw err;
     }
-    await loadProducts();
   }
 
-  // 한 섹션 안에서 이미지와 텍스트를 같이 편집 — 좌측 입력 → 우측 미리보기 즉시 반영
   const sections = STORE_SECTIONS;
 
   return (
@@ -173,7 +209,8 @@ export default function StorePage() {
                       type="button"
                       className="btn-save"
                       onClick={() => setModalOpen(true)}
-                      disabled={!draft}
+                      disabled={!draft || !isDirty}
+                      title={!isDirty ? "변경사항이 없습니다" : undefined}
                     >
                       저장
                     </button>
