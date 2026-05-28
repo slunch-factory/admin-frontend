@@ -1,0 +1,11 @@
+node_modules
+.next
+out
+dist
+*.log
+.env*.local
+.DS_Store
+
+# User-uploaded files (filled at runtime, not source)
+public/uploads/*
+!public/uploads/.gitkeep

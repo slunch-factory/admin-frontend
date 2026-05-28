@@ -1,0 +1,3559 @@
+@import "tailwindcss";
+
+/* ========================================================================
+   Styles ported verbatim from slunch-admin.html (lines 11-2684).
+   Original design preserved as-is per project requirement.
+   ======================================================================== */
+
+    /* ===== UNIFIED BASE STYLES ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* VeggieVerse Design System color scheme */
+    :root {
+      /* Design System — Core */
+      --ink:              #250a00;
+      --point:            #dcfd4a;
+      --ink-light:        #6e5035;
+      --alert-red:        #ff1714;
+
+      /* Design System — Backgrounds */
+      --bg-canvas:        #b4b4b4;
+      --bg-white:         #ffffff;
+      --bg-off:           #e8e2e2;
+      --bg-pale:          #fcfaf8;
+
+      /* Design System — Neutrals */
+      --neutral-stone:    #c9bcbe;
+      --neutral-warm:     #b8976a;
+      --neutral-lavender: #e0b6e5;
+      --neutral-yellow:   #fbf582;
+      --neutral-lime:     #cbed7f;
+      --neutral-orange:   #e6863f;
+      --neutral-blue:     #adcbf6;
+
+      /* Legacy aliases — mapped to design system tokens */
+      --bg-primary:       #fcfaf8;  /* bg-pale */
+      --bg-secondary:     #ffffff;  /* bg-white */
+      --bg-tertiary:      #e8e2e2;  /* bg-off */
+      --border:           #c9bcbe;  /* neutral-stone */
+      --text-primary:     #250a00;  /* ink */
+      --text-secondary:   #6e5035;  /* ink-light */
+      --text-dim:         #8a7a6e;
+      --accent-primary:   #6e5035;  /* ink-light (warm brown) */
+      --accent-secondary: #e6863f;  /* neutral-orange */
+      --accent-gold:      #6e5035;  /* ink-light */
+      --success:          #cbed7f;  /* neutral-lime */
+      --danger:           #ff1714;  /* alert-red */
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    /* ===== UNIFIED TOP NAVIGATION ===== */
+    .unified-top-nav {
+      height: 48px;
+      background-color: var(--text-primary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 40px;
+      z-index: 1001;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      flex-shrink: 0;
+    }
+
+    .unified-brand {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .unified-nav-tabs {
+      display: flex;
+      gap: 32px;
+      flex: 1;
+    }
+
+    .unified-nav-tab {
+      height: 48px;
+      border: none;
+      background: none;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      padding: 0 4px;
+    }
+
+    .unified-nav-tab:hover {
+      color: white;
+    }
+
+    .unified-nav-tab.active {
+      color: white;
+    }
+
+    .unified-nav-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background-color: var(--accent-secondary);
+    }
+
+    /* ===== TAB PANEL STRUCTURE ===== */
+    /* ===== TAB PANEL SYSTEM (simple height-based) ===== */
+    .tab-panels-container {
+      width: 100%;
+      height: calc(100vh - 48px);
+      overflow: hidden;
+    }
+
+    .tab-panel {
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+    .tab-panel.tab-subscribe.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== TOOL 1: COPY/TEXT AUTOMATION (원고 관리) ===== */
+
+    /* Tool 1 CSS - namespaced with .tab-copy */
+    .tab-copy .container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    .tab-copy .sidebar {
+      width: 280px;
+      min-width: 280px;
+      height: 100%;
+      background-color: var(--bg-tertiary);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .tab-copy .sidebar-header {
+      padding: 24px 16px;
+      border-bottom: 1px solid var(--border);
+      background-color: var(--accent-primary);
+      color: white;
+    }
+
+    .tab-copy .sidebar-header h1 {
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .tab-copy .sidebar-actions {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+    }
+
+    .tab-copy .sidebar-actions button {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-copy .btn-add {
+      background-color: var(--accent-primary);
+      color: white;
+    }
+
+    .tab-copy .btn-add:hover {
+      background-color: #4a3522;
+    }
+
+    .tab-copy .btn-import {
+      background-color: var(--accent-secondary);
+      color: white;
+    }
+
+    .tab-copy .btn-import:hover {
+      background-color: #c66a26;
+    }
+
+    .tab-copy .btn-delete {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .tab-copy .btn-delete:hover {
+      background-color: #d11210;
+    }
+
+    .tab-copy .product-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    .tab-copy .product-item {
+      padding: 12px;
+      margin-bottom: 8px;
+      background-color: white;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tab-copy .product-item:hover {
+      background-color: var(--bg-tertiary);
+      border-color: var(--accent-secondary);
+    }
+
+    .tab-copy .product-item.active {
+      background-color: var(--accent-primary);
+      color: white;
+      border-color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    .tab-copy .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .tab-copy .toolbar {
+      padding: 16px 24px;
+      background-color: white;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .tab-copy .toolbar button {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background-color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-copy .toolbar button:hover {
+      background-color: var(--bg-tertiary);
+      border-color: var(--accent-primary);
+    }
+
+    .tab-copy .toolbar .btn-save {
+      background-color: var(--accent-primary);
+      color: white;
+      border-color: var(--accent-primary);
+    }
+
+    .tab-copy .toolbar .btn-save:hover {
+      background-color: #4a3522;
+    }
+
+    .tab-copy .toolbar .btn-import {
+      background-color: var(--accent-secondary);
+      color: white;
+      border-color: var(--accent-secondary);
+    }
+
+    .tab-copy .toolbar .btn-import:hover {
+      background-color: #c66a26;
+    }
+
+    .tab-copy .toolbar .btn-export-html {
+      background-color: #adcbf6;
+      color: white;
+      border-color: #250a00;
+    }
+
+    .tab-copy .toolbar .btn-export-html:hover {
+      background-color: #7faae8;
+    }
+
+    .tab-copy .content {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .tab-copy .pane-edit {
+      width: 50%;
+      height: 100%;
+      overflow-y: auto;
+      padding: 24px;
+      border-right: 1px solid var(--border);
+    }
+
+    .tab-copy .pane-right {
+      width: 50%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .tab-copy .pane-right-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 16px 24px 8px 24px;
+      border-bottom: 1px solid var(--border);
+      background: white;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    /* [UX-H1] 비활성 탭 #999→#777: 흰 배경 대비 3.0:1→4.5:1 충족 */
+    .tab-copy .pane-tab-btn {
+      padding: 6px 14px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      color: #777;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .tab-copy .pane-tab-btn:hover {
+      color: var(--accent-primary);
+    }
+
+    .tab-copy .pane-tab-btn.active {
+      color: var(--accent-primary);
+      border-bottom-color: var(--accent-primary);
+      font-weight: 600;
+    }
+
+    .tab-copy .pane-tab-content {
+      display: none;
+    }
+
+    .tab-copy .pane-tab-content.active {
+      display: block;
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    .tab-copy .accordion-section {
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .tab-copy .accordion-header {
+      padding: 16px;
+      background-color: var(--bg-tertiary);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+
+    .tab-copy .accordion-header:hover {
+      background-color: var(--border);
+    }
+
+    .tab-copy .accordion-toggle {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: var(--accent-primary);
+      transition: transform 0.2s ease;
+    }
+
+    .tab-copy .accordion-header.collapsed .accordion-toggle {
+      transform: rotate(-90deg);
+    }
+
+    .tab-copy .accordion-body {
+      padding: 16px;
+      background-color: white;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .tab-copy .accordion-body.collapsed {
+      display: none;
+    }
+
+    .tab-copy .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tab-copy .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tab-copy .form-group input,
+    .tab-copy .form-group textarea {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: 'Pretendard', sans-serif;
+      font-size: 13px;
+      transition: border-color 0.2s ease;
+    }
+
+    .tab-copy .form-group input:focus,
+    .tab-copy .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      background-color: #fcfaf8;
+    }
+
+    .tab-copy .form-group textarea {
+      min-height: 52px;
+      resize: vertical;
+    }
+
+    .tab-copy .form-group textarea.tall {
+      min-height: 100px;
+    }
+
+    .tab-copy .preview-wrapper {
+      max-width: 860px;
+      min-width: 680px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .tab-copy .preview-wrapper img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .tab-copy .preview-section {
+      padding: 72px 48px;
+      margin-bottom: 0;
+      text-align: center;
+    }
+
+    .tab-copy .preview-section {
+      background-color: #fcfaf8;
+    }
+
+    /* Warm Sand — Intro, Strength */
+    .tab-copy .preview-sec-sand {
+      background-color: #e8e2e2 !important;
+    }
+
+    /* Neon Lime — Process, Review */
+    .tab-copy .preview-sec-lime {
+      background-color: #dcfd4a !important;
+    }
+
+    .tab-copy .preview-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background-color: #dcfd4a;
+      color: #250a00;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .tab-copy .preview-title {
+      font-size: 38px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .tab-copy .preview-subtitle {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #6e5035;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .tab-copy .preview-text {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .tab-copy .preview-stats {
+      display: flex;
+      justify-content: center;
+      gap: 56px;
+      margin-top: 72px;
+    }
+
+    .tab-copy .preview-stat {
+      text-align: center;
+    }
+
+    .tab-copy .preview-stat-number {
+      font-size: 53px;
+      font-weight: 700;
+      color: #6e5035;
+      line-height: 1.1;
+    }
+
+    .tab-copy .preview-stat-unit {
+      font-size: 22px;
+      color: #6e5035;
+    }
+
+    .tab-copy .preview-stat-label {
+      font-size: 17px;
+      color: var(--text-dim);
+      margin-top: 8px;
+    }
+
+    .tab-copy .preview-circles {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 72px;
+      flex-wrap: wrap;
+      max-width: 468px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .tab-copy .preview-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background-color: #250a00;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .tab-copy .preview-circle-main {
+      font-size: 28px;
+      font-weight: 700;
+      color: #fcfaf8;
+    }
+
+    .tab-copy .preview-circle-sub {
+      font-size: 14px;
+      color: rgba(252,250,248,0.7);
+      margin-top: 4px;
+    }
+
+    .tab-copy .preview-strengths {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      margin-top: 72px;
+      width: 100%;
+    }
+
+    .tab-copy .preview-strength-item {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      border: none;
+      border-radius: 0;
+    }
+
+    /* 라임 섹션 — 배지 반전 (블랙 배지) */
+    .tab-copy .preview-sec-lime .preview-badge {
+      background-color: #250a00 !important;
+      color: #dcfd4a !important;
+    }
+    /* 그레이 섹션 — 라임 배지 */
+    .tab-copy .preview-sec-gray .preview-badge {
+      background-color: #dcfd4a !important;
+      color: #250a00 !important;
+    }
+    /* 샌드 섹션 — 기본 라임 배지 유지 */
+    .tab-copy .preview-sec-sand .preview-badge {
+      background-color: #dcfd4a;
+      color: #250a00;
+    }
+
+    .tab-copy .preview-sec-gray {
+      background-color: #b4b4b4 !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='3' intercept='-1'/%3E%3CfeFuncG type='linear' slope='3' intercept='-1'/%3E%3CfeFuncB type='linear' slope='3' intercept='-1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E") !important;
+      background-blend-mode: overlay !important;
+      background-size: 150px 150px;
+    }
+
+    .tab-copy .preview-strength-item .strength-img {
+      width: 100%;
+      aspect-ratio: 16 / 7;
+      background: #b4b4b4;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .tab-copy .preview-strength-item .strength-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 0;
+    }
+
+    .tab-copy .preview-strength-text {
+      padding: 12px 24px 28px;
+    }
+
+    .tab-copy .preview-strength-num {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6e5035;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .tab-copy .preview-strength-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .tab-copy .preview-strength-desc {
+      font-size: 15px;
+      color: #666;
+      line-height: 1.35;
+    }
+
+    .tab-copy .preview-reviews {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 54px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .tab-copy .preview-review-item {
+      padding: 16px 0;
+      font-size: 18px;
+      line-height: 1.6;
+      color: #250a00;
+      text-align: center;
+      border-bottom: 1px solid #250a00;
+    }
+
+    .tab-copy .preview-review-item:last-child {
+      border-bottom: none;
+    }
+
+    .tab-copy .preview-servings {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 63px;
+    }
+
+    .tab-copy .preview-serving-item {
+      text-align: center;
+      width: 180px;
+      flex-shrink: 0;
+    }
+
+    .tab-copy .preview-serving-title {
+      font-size: 19px;
+      font-weight: 700;
+      margin-top: 14px;
+      color: var(--text-primary);
+    }
+
+    .tab-copy .preview-serving-desc {
+      font-size: 14px;
+      color: #666;
+      margin-top: 6px;
+    }
+
+    .tab-copy .preview-ingredient-tags {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+      margin-top: 54px;
+    }
+
+    .tab-copy .preview-ingredient-tag {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tab-copy .preview-ingredient-tag-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: #fcfaf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tab-copy .preview-ingredient-tag-label {
+      font-size: 17px;
+      color: #444;
+      font-weight: 500;
+    }
+
+    .tab-copy .preview-process-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 24px;
+      background: #fcfaf8;
+      border: none;
+      border-radius: 28px;
+      font-size: 17px;
+      color: #333;
+    }
+
+    .tab-copy .preview-process-step .step-num {
+      font-weight: 700;
+      color: #6e5035;
+      font-size: 19px;
+      flex-shrink: 0;
+    }
+
+    .tab-copy .preview-process-arrow {
+      color: #6e5035;
+      font-size: 16px;
+      text-align: center;
+      padding: 2px 0;
+    }
+
+    .tab-copy .preview-info-wrap {
+      width: 100%;
+      text-align: left;
+    }
+
+    .tab-copy .preview-info-header {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      padding: 14px 0 24px;
+      border-bottom: 2px solid var(--text-primary);
+    }
+
+    .tab-copy .preview-info-grid {
+      display: flex;
+      flex-direction: column;
+    }
+    .tab-copy .preview-info-row {
+      display: flex;
+      border-bottom: 1px solid #c9bcbe;
+    }
+    .tab-copy .preview-info-cell {
+      display: flex;
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 10px 0;
+      gap: 16px;
+      flex: 1;
+    }
+    .tab-copy .preview-info-cell.full-row {
+      flex: none;
+      width: 100%;
+    }
+
+    .tab-copy .preview-info-key {
+      width: 80px;
+      flex-shrink: 0;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .tab-copy .preview-info-val {
+      flex: 1;
+      color: var(--text-primary);
+    }
+
+    .tab-copy .preview-info-allergy {
+      background: var(--text-primary);
+      color: #fff;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.6;
+      border-radius: 4px;
+    }
+
+    .tab-copy .preview-info-notes {
+      padding: 8px 0;
+      font-size: 10px;
+      color: #999;
+      line-height: 1.5;
+    }
+
+    .tab-copy .preview-cert-split {
+      display: flex;
+      gap: 32px;
+      margin-top: 54px;
+      align-items: stretch;
+    }
+
+    .tab-copy .preview-cert-image {
+      flex: 1;
+      min-height: 280px;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+
+    .tab-copy .preview-cert-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .tab-copy .preview-cert-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0;
+    }
+
+    .tab-copy .preview-cert-item {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 14px 0;
+      border-bottom: 1px solid #e0b6e5;
+    }
+
+    .tab-copy .preview-cert-item:first-child {
+      border-top: 1px solid #e0b6e5;
+    }
+
+    .tab-copy .preview-cert-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .tab-copy .preview-cert-desc {
+      font-size: 14px;
+      color: #666;
+      font-weight: 400;
+    }
+
+    .tab-copy .code-container {
+      position: relative;
+    }
+
+    .tab-copy .code-copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 6px 12px;
+      background-color: var(--accent-primary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .tab-copy .code-copy-btn:hover {
+      background-color: #4a3522;
+    }
+
+    .tab-copy .code-copy-btn.copied {
+      background-color: var(--success);
+    }
+
+    .tab-copy pre {
+      background-color: #fcfaf8;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 16px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-top: 12px;
+    }
+
+    .tab-copy code {
+      font-family: 'Courier New', monospace;
+      color: #333;
+    }
+
+    /* [UX-M1] z-index 계층: nav=1000, modal=1100 — 모달이 네비 위에 표시되도록 수정 */
+    .tab-copy .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tab-copy .modal-overlay.active {
+      display: flex;
+    }
+
+    .tab-copy .modal {
+      background-color: white;
+      border-radius: 8px;
+      padding: 32px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .tab-copy .modal-header {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #333;
+    }
+
+    .tab-copy .modal-tabs {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-copy .modal-tab-button {
+      padding: 8px 16px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #999;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+      margin-bottom: -1px;
+    }
+
+    .tab-copy .modal-tab-button.active {
+      color: var(--accent-primary);
+      border-bottom-color: var(--accent-primary);
+    }
+
+    .tab-copy .modal-tab-content {
+      display: none;
+    }
+
+    .tab-copy .modal-tab-content.active {
+      display: block;
+    }
+
+    .tab-copy .dropzone {
+      border: 2px dashed var(--accent-primary);
+      border-radius: 8px;
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background-color: #fcfaf8;
+    }
+
+    .tab-copy .dropzone:hover {
+      background-color: var(--bg-tertiary);
+      border-color: var(--accent-secondary);
+    }
+
+    .tab-copy .dropzone.dragover {
+      background-color: var(--bg-tertiary);
+      border-color: var(--accent-secondary);
+    }
+
+    .tab-copy .dropzone-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .tab-copy .dropzone-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .tab-copy .dropzone-subtext {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .tab-copy #file-input {
+      display: none;
+    }
+
+    .tab-copy .import-textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      margin-bottom: 16px;
+    }
+
+    .tab-copy .import-textarea:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+    }
+
+    .tab-copy .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .tab-copy .modal-actions button {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .tab-copy .btn-import-confirm {
+      background-color: var(--accent-primary);
+      color: white;
+    }
+
+    .tab-copy .btn-import-confirm:hover {
+      background-color: #4a3522;
+    }
+
+    .tab-copy .btn-cancel {
+      background-color: #e8e2e2;
+      color: #333;
+    }
+
+    .tab-copy .btn-cancel:hover {
+      background-color: #c9bcbe;
+    }
+
+    .tab-copy .file-status {
+      padding: 12px;
+      background-color: #cbed7f;
+      border: 1px solid #250a00;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #250a00;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .tab-copy .file-status.show {
+      display: block;
+    }
+
+    .tab-copy .file-status.error {
+      background-color: #ff1714;
+      border-color: #ff1714;
+      color: #ffffff;
+    }
+
+    /* ===== TOOL 2: IMAGE PROMPT GENERATION (이미지 프롬프트) ===== */
+
+    /* Converted to light theme */
+    .tab-image .app-header {
+      display: none;
+    }
+
+    .tab-image .layout {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      width: 100%;
+      height: 100%;
+    }
+
+    .tab-image .panel-left {
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      height: 100%;
+      padding-bottom: 40px;
+      background: var(--bg-secondary);
+    }
+
+    .tab-image .panel-right {
+      overflow-y: auto;
+      height: 100%;
+      padding: 24px 28px 40px;
+      background: var(--bg-secondary);
+    }
+
+    .tab-image .section {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-image .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-primary);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-image .section-title .badge {
+      background: var(--accent-primary);
+      color: white;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: 800;
+    }
+
+    .tab-image .section-title .badge-blue {
+      background: #adcbf6;
+      color: white;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: 800;
+    }
+
+    /* [UX-H1] #888→#666: WCAG AA 대비 4.5:1 충족 (기존 #888은 4.2:1로 미달) */
+    .tab-image label {
+      display: block;
+      font-size: 11px;
+      color: #666666;
+      margin-bottom: 3px;
+      font-weight: 500;
+    }
+
+    .tab-image input[type="text"],
+    .tab-image input[type="number"],
+    .tab-image textarea,
+    .tab-image select {
+      width: 100%;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 9px 11px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .tab-image input:focus,
+    .tab-image textarea:focus,
+    .tab-image select:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .tab-image textarea {
+      resize: vertical;
+      min-height: 56px;
+    }
+
+    .tab-image .field {
+      margin-bottom: 10px;
+    }
+
+    .tab-image .row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tab-image .row .field {
+      flex: 1;
+    }
+
+    /* [UX-H1] opacity 0.6→0.85: 힌트 텍스트 대비 2.8:1→4.5:1 이상으로 개선 */
+    .tab-image .hint {
+      font-size: 10px;
+      color: #777777;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+
+    .tab-image .source-block {
+      background: var(--bg-tertiary);
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+    }
+
+    .tab-image .source-block:hover {
+      border-color: var(--accent-primary);
+    }
+
+    .tab-image .source-block.loaded {
+      border-style: solid;
+      border-color: var(--success);
+    }
+
+    .tab-image .source-block .icon {
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+
+    .tab-image .source-block .label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .tab-image .source-block .sub {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .tab-image .source-block.loaded .label {
+      color: var(--success);
+    }
+
+    .tab-image .source-block input[type="file"] {
+      display: none;
+    }
+
+    .tab-image .product-select-wrap {
+      margin-bottom: 10px;
+    }
+
+    .tab-image .product-select-wrap select {
+      background: var(--bg-secondary);
+      border: 1px solid var(--accent-primary);
+      font-weight: 600;
+      color: var(--accent-primary);
+    }
+
+    .tab-image .ingredient-tags {
+      margin-bottom: 10px;
+    }
+
+    .tab-image .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tab-image .tag {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tab-image .tag .remove {
+      cursor: pointer;
+      font-weight: bold;
+      opacity: 0.6;
+    }
+
+    .tab-image .tag .remove:hover {
+      opacity: 1;
+    }
+
+    .tab-image .tag-input-add {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .tab-image .tag-input-add input {
+      flex: 1;
+      height: 28px;
+    }
+
+    .tab-image .tag-input-add button {
+      padding: 4px 8px;
+      background: var(--accent-primary);
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .tab-image .tag-input-add button:hover {
+      background: #4a3522;
+    }
+
+    .tab-image .output-box {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      background: white;
+      margin-bottom: 10px;
+    }
+
+    .tab-image .output-label {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .tab-image .output-content {
+      font-size: 11px;
+      color: var(--text-primary);
+      font-family: monospace;
+      word-break: break-all;
+      white-space: pre-wrap;
+      line-height: 1.4;
+    }
+
+    .tab-image .output-actions {
+      display: flex;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .tab-image .output-btn {
+      flex: 1;
+      padding: 4px 8px;
+      border: none;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-image .output-btn.copy {
+      background: var(--accent-primary);
+      color: white;
+    }
+
+    .tab-image .output-btn.copy:hover {
+      background: #4a3522;
+    }
+
+    .tab-image .output-btn.copy.copied {
+      background: var(--success);
+    }
+
+    .tab-image .output-btn.clear {
+      background: #e8e2e2;
+      color: #333;
+    }
+
+    .tab-image .output-btn.clear:hover {
+      background: #c9bcbe;
+    }
+
+    .tab-image .settings-group {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .tab-image .slider-wrap {
+      margin-bottom: 8px;
+    }
+
+    .tab-image .slider-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3px;
+    }
+
+    .tab-image input[type="range"] {
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .tab-image input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      cursor: pointer;
+    }
+
+    .tab-image input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      cursor: pointer;
+      border: none;
+    }
+
+    .tab-image .checkbox-wrap {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .tab-image input[type="checkbox"] {
+      margin-right: 6px;
+      cursor: pointer;
+      width: 14px;
+      height: 14px;
+      accent-color: var(--accent-primary);
+    }
+
+    .tab-image .checkbox-wrap label {
+      margin: 0;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .tab-image .button-group {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .tab-image .button-group button {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .tab-image .btn-primary {
+      background: var(--accent-primary);
+      color: white;
+    }
+
+    .tab-image .btn-primary:hover {
+      background: #4a3522;
+    }
+
+    .tab-image .btn-secondary {
+      background: #e8e2e2;
+      color: #333;
+    }
+
+    .tab-image .btn-secondary:hover {
+      background: #c9bcbe;
+    }
+
+    .tab-image .output-display {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      margin-top: 16px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .tab-image .output-display h4 {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .tab-image .output-display p {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.5;
+      font-family: monospace;
+      word-break: break-all;
+      white-space: pre-wrap;
+    }
+
+    /* ===== SHOT CARD SELECTION (이미지 프롬프트 탭 - 컷 구성 선택) ===== */
+    .tab-image .shot-card-select {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    /* thumbnail area removed */
+    .tab-image .shot-card-select .shot-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .tab-image .shot-card-select:hover {
+      border-color: var(--accent-primary);
+    }
+    .tab-image .shot-card-select.active {
+      border-color: var(--accent-primary);
+      background: #fcfaf8;
+    }
+    .tab-image .shot-card-select .shot-name {
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab-image .shot-card-select .shot-name .num {
+      background: var(--accent-primary);
+      color: white;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .tab-image .shot-card-select:not(.active) .shot-name .num {
+      background: var(--border);
+      color: var(--text-dim);
+    }
+    .tab-image .shot-card-select .shot-purpose {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+    .tab-image .shot-card-select .shot-maps {
+      font-size: 10px;
+      color: #6e5035;
+      margin-top: 3px;
+    }
+    /* shot-ref-image removed */
+    .tab-image .shot-ref-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin: 6px 0 0 0;
+      /* [UX-M3] flex 부모에 min-width:0 — 긴 URL이 컨테이너를 밀어내는 문제 방지 */
+      min-width: 0;
+    }
+    .tab-image .shot-ref-row input[type="text"] {
+      flex: 1;
+      font-size: 11px !important;
+      padding: 5px 8px !important;
+      border-radius: 4px !important;
+      min-width: 0;
+      /* [UX-M3] 긴 URL 말줄임 표시 */
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    .tab-image .ref-upload-btn {
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .tab-image .ref-upload-btn:hover {
+      border-color: var(--accent-primary);
+      background: #fcfaf8;
+    }
+    /* shot-ref-thumb removed */
+    /* ref board removed */
+    .tab-image .shot-check {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 14px;
+      color: var(--accent-primary);
+      display: none;
+    }
+    .tab-image .shot-card-select.active .shot-check {
+      display: block;
+    }
+
+    /* Shot type badges */
+    .tab-image .shot-type {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+    .tab-image .shot-type.hero       { background: #e6863f; color: #250a00; }
+    .tab-image .shot-type.dish       { background: #cbed7f; color: #250a00; }
+    .tab-image .shot-type.cooking    { background: #e6863f; color: #250a00; }
+    .tab-image .shot-type.ingredient { background: #cbed7f; color: #250a00; }
+    .tab-image .shot-type.factory    { background: #c9bcbe; color: #250a00; }
+    .tab-image .shot-type.serving    { background: #fbf582; color: #250a00; }
+    .tab-image .shot-type.eating     { background: #adcbf6; color: #250a00; }
+    .tab-image .shot-type.reveal     { background: #e0b6e5; color: #250a00; }
+    .tab-image .shot-type.package    { background: #fbf582; color: #250a00; }
+    .tab-image .shot-type.flatlay    { background: #e0b6e5; color: #250a00; }
+    .tab-image .shot-type.detail    { background: #adcbf6; color: #250a00; }
+
+    /* ===== OUTPUT PANEL (이미지 프롬프트 탭 - 출력) ===== */
+    .tab-image .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 60vh;
+      color: var(--text-dim);
+      text-align: center;
+    }
+    .tab-image .empty-state .icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+    .tab-image .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab-image .output-header h2 {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .tab-image .output-count {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-left: 8px;
+    }
+    .tab-image .btn-copy-all {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 8px 16px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .tab-image .btn-copy-all:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+    .tab-image .shot-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .tab-image .shot-card:hover {
+      border-color: var(--accent-primary);
+    }
+    .tab-image .shot-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-tertiary);
+    }
+    .tab-image .shot-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab-image .shot-num {
+      background: var(--accent-primary);
+      color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .tab-image .shot-target {
+      font-size: 10px;
+      color: #6e5035;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
+      margin-left: 4px;
+    }
+    .tab-image .output-ref-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(139,105,20,0.12);
+      color: var(--accent-primary);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
+    }
+    .tab-image .btn-copy {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-weight: 600;
+    }
+    .tab-image .btn-copy:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+    .tab-image .btn-copy.copied {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+    .tab-image .shot-card.done {
+      border-left: 4px solid var(--success);
+      opacity: 0.55;
+    }
+    .tab-image .shot-card.done .shot-header {
+      background: #cbed7f;
+    }
+    .tab-image .shot-card.done .shot-num {
+      background: var(--success);
+    }
+    .tab-image .shot-card.done .btn-copy {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+      font-size: 9px;
+    }
+    .tab-image .shot-body {
+      padding: 14px 16px;
+    }
+    /* [UX-H2] 11px → 13px: 모노스페이스 11px는 대형 모니터에서도 가독성 낮음 */
+    .tab-image .prompt-text {
+      font-family: 'JetBrains Mono', 'SF Mono', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--text-primary);
+    }
+    .tab-image .neg-prompt {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: #fcfaf8;
+      border: 1px solid #ff1714;
+      border-radius: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--danger);
+      line-height: 1.5;
+    }
+    .tab-image .neg-label {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--danger);
+      opacity: 0.7;
+      margin-bottom: 3px;
+    }
+
+    /* Chip group for lighting */
+    .tab-image .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    .tab-image .chip {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-image .chip:hover {
+      border-color: var(--text-dim);
+    }
+    .tab-image .chip.active {
+      background: #fcfaf8;
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    /* Generate button — sticky at bottom */
+    .tab-image .section-generate {
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
+    }
+    .tab-image .btn-generate {
+      width: 100%;
+      padding: 13px;
+      background: var(--accent-primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-image .btn-generate:hover {
+      background: #6e5035;
+      transform: translateY(-1px);
+    }
+
+    /* Prompt parameter highlighting */
+    .tab-image .prompt-text .mj-param {
+      display: inline;
+      color: #6e5035;
+      font-weight: 700;
+      background: rgba(124,58,237,0.07);
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+    .tab-image .prompt-text .mj-url {
+      color: #6e5035;
+      font-size: 10px;
+      word-break: break-all;
+    }
+    .tab-image .prompt-text .mj-neg {
+      color: #ff1714;
+      font-weight: 600;
+    }
+    .tab-image .prompt-params-divider {
+      display: block;
+      border-top: 1px dashed #c9bcbe;
+      margin: 8px 0 4px;
+      padding-top: 6px;
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.5px;
+    }
+
+    /* Shot card type-colored left border */
+    .tab-image .shot-card[data-type="hero"]       { border-left: 4px solid #e6863f; }
+    .tab-image .shot-card[data-type="dish"]        { border-left: 4px solid #cbed7f; }
+    .tab-image .shot-card[data-type="cooking"]     { border-left: 4px solid #e6863f; }
+    .tab-image .shot-card[data-type="ingredient"]  { border-left: 4px solid #cbed7f; }
+    .tab-image .shot-card[data-type="factory"]     { border-left: 4px solid #c9bcbe; }
+    .tab-image .shot-card[data-type="serving"]     { border-left: 4px solid #fbf582; }
+    .tab-image .shot-card[data-type="eating"]      { border-left: 4px solid #adcbf6; }
+    .tab-image .shot-card[data-type="reveal"]      { border-left: 4px solid #e0b6e5; }
+    .tab-image .shot-card[data-type="package"]     { border-left: 4px solid #fbf582; }
+    .tab-image .shot-card.done { border-left-color: var(--success) !important; }
+
+    /* Progress counter */
+    .tab-image .copy-progress {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-weight: 600;
+      padding: 4px 10px;
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+    }
+    .tab-image .copy-progress.all-done {
+      color: var(--success);
+      background: rgba(39,174,96,0.1);
+    }
+
+    /* Korean desc block */
+    .tab-image .ko-desc-block {
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      background: #fcfaf8;
+      border-radius: 6px;
+      line-height: 1.6;
+      border-left: 3px solid var(--accent-primary);
+    }
+
+    /* Collapsible sections */
+    .tab-image .section-collapse-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text-dim);
+      padding: 0;
+      margin-left: auto;
+      transition: transform 0.2s;
+      line-height: 1;
+    }
+    .tab-image .section.collapsed .section-body {
+      display: none;
+    }
+    .tab-image .section.collapsed .section-collapse-btn {
+      transform: rotate(-90deg);
+    }
+    /* [UX-H4] 접힌 섹션에 현재 설정값 요약 표시 */
+    .tab-image .section-summary {
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--text-dim);
+      margin-left: 8px;
+      display: none;
+    }
+    .tab-image .section.collapsed .section-summary {
+      display: inline;
+    }
+
+    /* Copy All success */
+    .tab-image .btn-copy-all.copied {
+      background: var(--success) !important;
+      color: white !important;
+      border-color: var(--success) !important;
+    }
+
+    /* [UX-H3] 폼 유효성 에러 상태: 빨간 테두리 + 흔들림 애니메이션 */
+    .tab-image .field-error input,
+    .tab-image .field-error select {
+      border-color: var(--danger) !important;
+      box-shadow: 0 0 0 2px rgba(231,76,60,0.15);
+      animation: shake 0.3s ease;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    /* sref thumbnail removed */
+
+    /* Ingredient tags */
+    .tab-image .ing-tag {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      border-radius: 16px;
+      font-size: 11px;
+    }
+    .tab-image .ing-tag .rank {
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--accent-primary);
+      background: rgba(139,105,20,0.12);
+      padding: 1px 5px;
+      border-radius: 8px;
+    }
+    .tab-image .ing-tag .name { color: var(--text-primary); }
+    .tab-image .ing-tag .en { color: var(--text-dim); font-size: 10px; }
+
+    /* Linked info */
+    .tab-image .linked-info {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-top: 8px;
+      font-size: 11px;
+    }
+    .tab-image .linked-info .li-label {
+      color: var(--text-dim);
+      font-size: 10px;
+      margin-bottom: 2px;
+    }
+    .tab-image .linked-info .li-val {
+      color: var(--text-primary);
+    }
+    .tab-image .auto-tag {
+      display: inline-block;
+      background: rgba(42,123,199,0.12);
+      color: #6e5035;
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+    .tab-image .auto-filled {
+      border-color: var(--success) !important;
+      box-shadow: 0 0 0 1px rgba(39,174,96,0.3);
+    }
+    .tab-image .auto-style-badge {
+      display: inline-block;
+      background: rgba(39,174,96,0.12);
+      color: var(--success);
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    /* ===== [UX-C1] 반응형 브레이크포인트: 태블릿/모바일 레이아웃 지원 ===== */
+    @media (max-width: 1024px) {
+      /* Tab 2: 2-column grid → 단일 컬럼 */
+      .tab-image .layout {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .tab-image .panel-left {
+        height: auto;
+        max-height: 50vh;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .tab-image .panel-right {
+        height: auto;
+        min-height: 50vh;
+      }
+      /* Tab 1: 사이드바 상단 가로로 */
+      .tab-copy .container {
+        flex-direction: column;
+      }
+      .tab-copy .sidebar {
+        width: 100%;
+        min-width: unset;
+        height: auto;
+        max-height: 200px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .tab-copy .content {
+        flex-direction: column;
+      }
+      .tab-copy .pane-edit,
+      .tab-copy .pane-right {
+        width: 100%;
+        height: auto;
+      }
+      .tab-copy .pane-edit {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        max-height: 40vh;
+      }
+      /* Tab 3 */
+      .tab-subscribe .container {
+        flex-direction: column;
+      }
+      .tab-subscribe .sidebar {
+        width: 100%;
+        height: auto;
+        max-height: 180px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .tab-subscribe .content {
+        flex-direction: column;
+      }
+      .tab-subscribe .pane-edit {
+        width: 100%;
+        max-height: 40vh;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .unified-top-nav {
+        padding: 0 12px;
+        gap: 16px;
+      }
+      .unified-brand {
+        font-size: 14px;
+      }
+      .unified-nav-tabs {
+        gap: 12px;
+      }
+      .unified-nav-tab {
+        font-size: 12px;
+      }
+      .tab-image .section {
+        padding: 14px 16px;
+      }
+      .tab-image .panel-right {
+        padding: 16px;
+      }
+      .tab-image .row {
+        flex-direction: column;
+      }
+    }
+
+    /* [UX-L2] 인쇄 시 UI 숨기고 프롬프트 내용만 출력 */
+    @media print {
+      .unified-top-nav,
+      .tab-image .panel-left,
+      .tab-image .btn-copy,
+      .tab-image .btn-copy-all,
+      .tab-image .output-header div,
+      .tab-image .empty-state { display: none !important; }
+      .tab-image .layout { grid-template-columns: 1fr; }
+      .tab-image .panel-right { padding: 0; }
+      .tab-image .shot-card { break-inside: avoid; border-color: #ccc; }
+      .tab-image .prompt-text { font-size: 11px; }
+    }
+
+    /* Shared scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #e8e2e2;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent-primary);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4a3522;
+    }
+  
+    /* ===== TAB: 구독 상세 (SUBSCRIBE) ===== */
+    .tab-subscribe {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+
+    .tab-subscribe .container {
+      display: flex;
+      height: 100%;
+      flex: 1;
+    }
+
+    .tab-subscribe .sidebar {
+      width: 240px;
+      background-color: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .tab-subscribe .sidebar-header {
+      padding: 16px 12px;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border);
+      background-color: var(--bg-tertiary);
+    }
+
+    .tab-subscribe .product-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .tab-subscribe .product-item {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+
+    .tab-subscribe .product-item:hover {
+      background-color: var(--bg-tertiary);
+    }
+
+    .tab-subscribe .product-item.active {
+      background-color: var(--bg-tertiary);
+      border-left: 3px solid var(--accent-primary);
+      padding-left: 9px;
+    }
+
+    .tab-subscribe .product-item-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .tab-subscribe .product-item-meta {
+      font-size: 11px;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+
+    .tab-subscribe .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .tab-subscribe .toolbar {
+      padding: 12px 16px;
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .tab-subscribe .btn-export-html,
+    .tab-subscribe .btn-save {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background-color: white;
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tab-subscribe .btn-export-html:hover,
+    .tab-subscribe .btn-save:hover {
+      background-color: var(--bg-tertiary);
+      border-color: var(--accent-primary);
+    }
+
+    .tab-subscribe .btn-save {
+      margin-left: auto;
+      background-color: var(--accent-primary);
+      color: white;
+      border-color: var(--accent-primary);
+    }
+
+    .tab-subscribe .btn-save:hover {
+      background-color: #4a3522;
+    }
+
+    .tab-subscribe .content {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      gap: 0;
+    }
+
+    .tab-subscribe .pane-edit {
+      width: 40%;
+      overflow-y: auto;
+      padding: 16px;
+      background-color: var(--bg-primary);
+      border-right: 1px solid var(--border);
+    }
+
+    .tab-subscribe .pane-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .tab-subscribe .pane-right-tabs {
+      display: flex;
+      gap: 0;
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .tab-subscribe .pane-tab-btn {
+      padding: 12px 16px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab-subscribe .pane-tab-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .tab-subscribe .pane-tab-btn.active {
+      color: var(--accent-primary);
+      border-bottom-color: var(--accent-primary);
+    }
+
+    .tab-subscribe .pane-tab-content {
+      display: none;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .tab-subscribe .pane-tab-content.active {
+      display: block;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .tab-subscribe .code-container {
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tab-subscribe .code-copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 6px 12px;
+      background-color: var(--accent-primary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 10;
+      transition: background-color 0.15s ease;
+    }
+
+    .tab-subscribe .code-copy-btn:hover {
+      background-color: #4a3522;
+    }
+
+    .tab-subscribe pre {
+      margin: 0;
+      padding: 16px;
+      padding-top: 40px;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+      background-color: var(--bg-primary);
+      flex: 1;
+    }
+
+    .tab-subscribe code {
+      font-family: 'Courier New', monospace;
+      color: #333;
+    }
+
+    .tab-subscribe .accordion-section {
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .tab-subscribe .accordion-header {
+      padding: 12px 14px;
+      background-color: var(--bg-tertiary);
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-primary);
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.15s ease;
+    }
+
+    .tab-subscribe .accordion-header:hover {
+      background-color: #e8e2e2;
+    }
+
+    .tab-subscribe .accordion-header span {
+      font-size: 10px;
+      transition: transform 0.2s ease;
+    }
+
+    .tab-subscribe .accordion-header.open span {
+      transform: rotate(180deg);
+    }
+
+    .tab-subscribe .accordion-content {
+      display: none;
+      padding: 12px 14px;
+      background-color: white;
+      border-top: 1px solid var(--border);
+    }
+
+    .tab-subscribe .accordion-content.open {
+      display: block;
+    }
+
+    .tab-subscribe .form-group {
+      margin-bottom: 12px;
+    }
+
+    .tab-subscribe .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .tab-subscribe input[type="text"],
+    .tab-subscribe input[type="number"],
+    .tab-subscribe textarea,
+    .tab-subscribe select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font-size: 12px;
+      font-family: inherit;
+      color: var(--text-primary);
+      background-color: white;
+    }
+
+    .tab-subscribe textarea {
+      resize: vertical;
+      min-height: 80px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .tab-subscribe input[type="text"]:focus,
+    .tab-subscribe input[type="number"]:focus,
+    .tab-subscribe textarea:focus,
+    .tab-subscribe select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 2px rgba(139, 105, 20, 0.1);
+    }
+
+    .tab-subscribe .nutrients-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .tab-subscribe .nutrient-input {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tab-subscribe .nutrient-input label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .tab-subscribe .nutrient-input input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font-size: 12px;
+    }
+
+    .tab-subscribe .checkbox-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .tab-subscribe .checkbox-item input[type="checkbox"] {
+      width: auto;
+      margin-right: 8px;
+      cursor: pointer;
+    }
+
+    .tab-subscribe .checkbox-item label {
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    /* ===== Preview Section Styles — ALL BLACK THEME ===== */
+    .tab-subscribe .preview-section {
+      padding: 72px 48px;
+      text-align: center;
+      background-color: #250a00;
+    }
+
+    .tab-subscribe .preview-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background-color: #dcfd4a;
+      color: #250a00;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .tab-subscribe .preview-title {
+      font-size: 38px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #fcfaf8;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .tab-subscribe .preview-subtitle {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #dcfd4a;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .tab-subscribe .preview-text {
+      font-size: 18px;
+      line-height: 1.6;
+      color: rgba(253,251,243,0.65);
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .tab-subscribe .preview-info-header {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #dcfd4a;
+    }
+
+    .tab-subscribe .preview-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .tab-subscribe .preview-info-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .tab-subscribe .preview-info-key {
+      font-size: 13px;
+      font-weight: 600;
+      color: #dcfd4a;
+      width: 80px;
+      flex-shrink: 0;
+    }
+
+    .tab-subscribe .preview-info-val {
+      font-size: 13px;
+      color: rgba(252,250,248,0.7);
+      flex: 1;
+    }
+
+    .tab-subscribe .preview-info-cell {
+      font-size: 13px;
+      color: rgba(252,250,248,0.7);
+    }
+
+    .tab-subscribe .preview-info-allergy {
+      font-size: 13px;
+      font-weight: 600;
+      color: #dcfd4a;
+      margin-top: 12px;
+    }
+
+    .tab-subscribe .preview-info-notes {
+      font-size: 10px;
+      color: rgba(253,251,243,0.35);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+
+/* ===========================================================================
+   slunch-admin overrides — fixes for nav tab alignment, slim toolbar,
+   in-pane save button, edge-to-edge layout, and mobile responsiveness.
+   =========================================================================== */
+
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Nav: vertically center tab labels (Link renders as <a> which is inline) */
+.unified-top-nav {
+  width: 100%;
+  box-sizing: border-box;
+}
+.unified-nav-tabs {
+  display: flex;
+  align-items: center;
+  height: 48px;
+}
+.unified-nav-tab {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  line-height: 1;
+}
+
+/* Tab panel container fills viewport edge-to-edge */
+.tab-panels-container {
+  width: 100%;
+}
+
+.tab-copy .container,
+.tab-subscribe .container {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Flex children that should shrink must have min-width: 0 to prevent overflow */
+.tab-copy .main,
+.tab-subscribe .main,
+.tab-copy .content,
+.tab-subscribe .content {
+  min-width: 0;
+}
+
+/* Slim toolbar — just log line, lower height */
+.tab-copy .toolbar,
+.tab-subscribe .toolbar {
+  padding: 6px 16px;
+  min-height: 32px;
+  font-size: 12px;
+  line-height: 1.4;
+  background: #fcfaf8;
+}
+
+/* In-pane bottom-right save bar */
+.pane-edit-footer {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 20px;
+  background: linear-gradient(to top, white 60%, rgba(255,255,255,0));
+  border-top: 1px solid var(--border);
+  z-index: 5;
+}
+
+.pane-edit-footer .btn-save {
+  padding: 10px 22px;
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pane-edit-footer .btn-save:hover {
+  background: #4a3522;
+}
+.pane-edit-footer .btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Image upload button next to URL input */
+.image-field {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+.image-field input[type="text"] {
+  flex: 1;
+  min-width: 0;
+}
+.image-field .upload-btn {
+  flex-shrink: 0;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--text-secondary);
+}
+.image-field .upload-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+.image-field .upload-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Mobile responsive enhancements */
+@media (max-width: 1024px) {
+  .tab-copy .pane-edit,
+  .tab-copy .pane-right,
+  .tab-subscribe .pane-edit,
+  .tab-subscribe .pane-right {
+    max-height: none;
+  }
+  .pane-edit-footer {
+    padding: 10px 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .unified-top-nav {
+    padding: 0 12px;
+    gap: 12px;
+  }
+  .unified-nav-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 14px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .unified-nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .unified-nav-tab {
+    flex-shrink: 0;
+  }
+  .tab-copy .sidebar,
+  .tab-subscribe .sidebar {
+    max-height: 160px;
+  }
+  .tab-copy .sidebar-header,
+  .tab-subscribe .sidebar-header {
+    padding: 12px;
+  }
+  .tab-copy .toolbar,
+  .tab-subscribe .toolbar {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  .pane-edit-footer .btn-save {
+    padding: 9px 18px;
+    font-size: 13px;
+  }
+}
+
+/* ===========================================================================
+   slunch-admin form redesign (image #3 reference): English labels,
+   IMAGE badges, dashed image inputs, prompt hint subtitle, brown active
+   sidebar item without losing readability, resizable preview pane.
+   =========================================================================== */
+
+/* Sidebar active state — brown background, dark text (not white) */
+.tab-copy .product-item.active,
+.tab-subscribe .product-item.active {
+  background-color: var(--neutral-warm);
+  color: var(--text-primary);
+  border-color: var(--neutral-warm);
+  font-weight: 600;
+}
+
+.tab-copy .product-item.active:hover,
+.tab-subscribe .product-item.active:hover {
+  background-color: #a98555;
+  border-color: #a98555;
+}
+
+/* Preview wrapper: drop original 860px max — let it fill its pane */
+.tab-copy .preview-wrapper {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  width: 100%;
+  margin: 0;
+}
+.tab-copy .preview-section {
+  padding: 48px 32px;
+}
+
+/* Resizable divider between pane-edit and pane-right */
+.pane-resizer {
+  width: 6px;
+  flex-shrink: 0;
+  background: var(--border);
+  cursor: col-resize;
+  position: relative;
+  transition: background-color 0.15s;
+}
+.pane-resizer::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 32px;
+  background: var(--text-dim);
+  border-radius: 1px;
+}
+.pane-resizer:hover,
+.pane-resizer.dragging {
+  background: var(--accent-primary);
+}
+.pane-resizer:hover::after,
+.pane-resizer.dragging::after {
+  background: white;
+}
+
+/* When resizer is present we use flex widths instead of fixed 50/50 */
+.tab-copy .pane-edit.resizable,
+.tab-copy .pane-right.resizable,
+.tab-subscribe .pane-edit.resizable,
+.tab-subscribe .pane-right.resizable {
+  width: auto;
+  flex-shrink: 1;
+  min-width: 280px;
+}
+
+/* ===== Form fields (matches image #3) ===== */
+.store-form {
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.form-field {
+  margin-bottom: 18px;
+}
+
+.form-label-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.form-label-en {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.form-label-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--accent-secondary);
+  background: rgba(230, 134, 63, 0.12);
+  border: 1px solid rgba(230, 134, 63, 0.35);
+  border-radius: 10px;
+}
+
+.form-input {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(110, 80, 53, 0.12);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 64px;
+  line-height: 1.5;
+}
+
+.form-input-dashed {
+  border-style: dashed;
+  border-width: 1.5px;
+  background: #fcfaf8;
+}
+
+/* Section card (accordion) */
+.form-section {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background: white;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.form-section-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+.form-section.open .form-section-header {
+  background: #fcfaf8;
+  border-bottom: 1px solid var(--border);
+}
+.form-section-header:hover {
+  background: #fcfaf8;
+}
+
+.form-section-caret {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.form-section-body {
+  padding: 18px;
+  background: white;
+}
+
+/* Image field */
+.image-field-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.image-field-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.upload-btn {
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.upload-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+.upload-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.upload-btn-danger {
+  color: var(--danger);
+  border-color: rgba(255, 23, 20, 0.3);
+}
+.upload-btn-danger:hover {
+  background: rgba(255, 23, 20, 0.08);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.image-field-hint {
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: #fcfaf8;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  line-height: 1.5;
+}
+.image-field-hint-label {
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.image-field-error {
+  font-size: 11px;
+  color: var(--danger);
+}
+
+.image-field-preview {
+  max-width: 240px;
+  max-height: 160px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  object-fit: cover;
+  display: block;
+}
+
+/* Save button — make it more visible */
+.pane-edit-footer {
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(to top, white 70%, rgba(255, 255, 255, 0.85) 90%, rgba(255, 255, 255, 0));
+  padding: 14px 20px;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border);
+  z-index: 10;
+}
+
+.pane-edit-footer .btn-save {
+  padding: 10px 28px;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  background: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(110, 80, 53, 0.25);
+  transition: all 0.15s;
+}
+.pane-edit-footer .btn-save:hover {
+  background: #4a3522;
+  border-color: #4a3522;
+  box-shadow: 0 4px 12px rgba(110, 80, 53, 0.35);
+}
+
+/* Ensure right pane has no leaking padding */
+.tab-copy .pane-right,
+.tab-subscribe .pane-right {
+  background: white;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.tab-copy .pane-right-tabs,
+.tab-subscribe .pane-right-tabs {
+  padding: 12px 18px 6px 18px;
+}
+
+/* Subscribe form: reuse the same .form-* classes inside SubscribeProductForm
+   so the visual style is consistent. */
+
+/* SplitPane container */
+.split-pane {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  min-width: 0;
+}
+.split-pane-left,
+.split-pane-right {
+  flex-shrink: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+  .split-pane {
+    flex-direction: column;
+  }
+  .split-pane-left,
+  .split-pane-right {
+    flex-basis: auto !important;
+    min-height: 40vh;
+  }
+  .pane-resizer {
+    width: 100%;
+    height: 6px;
+    cursor: row-resize;
+  }
+  .pane-resizer::after {
+    left: 50%;
+    top: 2px;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 2px;
+  }
+}
+
+/* ===========================================================================
+   Subscribe preview card (image #4 design):
+   2-column card — dark brown brand panel on left, white details on right.
+   =========================================================================== */
+
+.sub-card {
+  display: grid;
+  grid-template-columns: 5fr 6fr;
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(37, 10, 0, 0.12);
+  max-width: 100%;
+}
+
+.sub-card-left {
+  background: #250a00;
+  color: white;
+  padding: 28px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 540px;
+  gap: 16px;
+}
+
+.sub-brand-name {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1.05;
+  color: white;
+}
+
+.sub-brand-sub {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.sub-image-slot {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0;
+  min-height: 220px;
+}
+
+.sub-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.sub-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 12px;
+  text-align: center;
+}
+.sub-image-icon {
+  font-size: 36px;
+  opacity: 0.4;
+}
+
+.sub-brand-foot {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: "Courier New", monospace;
+}
+
+/* Right panel */
+.sub-card-right {
+  padding: 32px 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sub-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: #250a00;
+  line-height: 1.25;
+}
+
+.sub-tagline {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #6e5035;
+  line-height: 1.4;
+}
+
+.sub-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.sub-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  line-height: 1.4;
+}
+
+.sub-badge-diet {
+  background: white;
+  color: #250a00;
+  border: 1.5px solid #250a00;
+}
+
+.sub-badge-allergy {
+  background: #e6863f;
+  color: white;
+  border: 1.5px solid #e6863f;
+}
+
+.sub-badge-tier {
+  background: #fbf582;
+  color: #250a00;
+  border: 1.5px solid #d4cb6d;
+}
+
+.sub-price {
+  margin-top: 22px;
+  font-size: 32px;
+  font-weight: 700;
+  color: #250a00;
+  letter-spacing: -0.5px;
+}
+
+.sub-divider {
+  margin: 20px 0 16px;
+  border: none;
+  border-top: 1px solid #e8e2e2;
+}
+
+.sub-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #b8a89a;
+  margin-bottom: 10px;
+}
+
+.sub-ingredient-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.sub-ingredient-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3eded;
+  font-size: 14px;
+  color: #333;
+}
+
+.sub-ingredient-row:last-child {
+  border-bottom: none;
+}
+
+.sub-ingredient-qty {
+  color: #6e5035;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.sub-nutrition-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.sub-nutrient-cell {
+  background: #fcfaf8;
+  border: 1px solid #f0eae3;
+  border-radius: 8px;
+  padding: 12px 6px;
+  text-align: center;
+}
+
+.sub-nutrient-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #250a00;
+}
+
+.sub-nutrient-label {
+  font-size: 11px;
+  color: #6e5035;
+  margin-top: 4px;
+}
+
+.sub-description {
+  font-size: 13px;
+  color: #444;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.sub-hashtags {
+  margin-top: 24px;
+  font-size: 12px;
+  color: #6e5035;
+  padding-top: 16px;
+  border-top: 1px solid #f3eded;
+}
+
+.sub-empty {
+  font-size: 12px;
+  color: var(--text-dim);
+  padding: 12px 0;
+}
+
+/* selling-point card (form side) */
+.selling-point-card {
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fcfaf8;
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.selling-point-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+/* Mobile — stack the card vertically */
+@media (max-width: 768px) {
+  .sub-card {
+    grid-template-columns: 1fr;
+  }
+  .sub-card-left {
+    min-height: auto;
+  }
+  .sub-nutrition-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ===========================================================================
+   Make 구독 상세 sidebar match 스토어 상세 sidebar exactly.
+   Original ported CSS used different styles for tab-subscribe sidebar;
+   unify them here.
+   =========================================================================== */
+
+.tab-subscribe .sidebar {
+  width: 280px;
+  min-width: 280px;
+  background-color: var(--bg-tertiary);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.tab-subscribe .sidebar-header {
+  padding: 24px 16px;
+  background-color: var(--accent-primary);
+  color: white;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+.tab-subscribe .sidebar-header h1 {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  text-align: center;
+}
+
+.tab-subscribe .sidebar-actions {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+}
+
+.tab-subscribe .sidebar-actions button {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  font-family: inherit;
+}
+
+.tab-subscribe .btn-add {
+  background-color: var(--accent-primary);
+}
+.tab-subscribe .btn-add:hover {
+  background-color: #4a3522;
+}
+
+.tab-subscribe .btn-delete {
+  background-color: var(--danger);
+}
+.tab-subscribe .btn-delete:hover {
+  background-color: #d11210;
+}
+
+.tab-subscribe .product-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.tab-subscribe .product-item {
+  padding: 12px;
+  margin-bottom: 8px;
+  background-color: white;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-left-width: 1px !important;
+  padding-left: 12px !important;
+}
+
+.tab-subscribe .product-item:hover {
+  background-color: var(--bg-tertiary);
+  border-color: var(--accent-secondary);
+}
+
+.tab-subscribe .product-item.active {
+  background-color: var(--neutral-warm);
+  color: var(--text-primary);
+  border-color: var(--neutral-warm);
+  font-weight: 600;
+}
+
+.tab-subscribe .product-item.active:hover {
+  background-color: #a98555;
+  border-color: #a98555;
+}
