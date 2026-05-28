@@ -227,10 +227,7 @@ export default function SubscribePage() {
                   </button>
                 </div>
               </div>
-              <div
-                className={`pane-tab-content active preview-frame preview-${viewport}`}
-                style={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}
-              >
+              <div className={`preview-frame preview-${viewport}`}>
                 <div className="preview-content">
                   {draft && <SubscribePreview product={draft} />}
                 </div>

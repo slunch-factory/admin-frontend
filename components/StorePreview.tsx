@@ -14,14 +14,14 @@ export function StorePreview({ product }: Props) {
       <div data-section-id="hero">
         <ImageBlock value={product.hero_image} fallback="히어로 이미지 영역 (1:3 비율)" full />
         <ImageBlock value={product.feature_image} fallback="디쉬 항공샷 이미지" full />
-        <Section label="1" tone="white">
+        <Section tone="white">
           <Title text={product.hero_title} />
           <Text text={product.hero_desc} />
         </Section>
       </div>
 
       <div data-section-id="intro">
-        <Section label="2" tone="sand">
+        <Section tone="sand">
           <Subtitle text={product.intro_label} />
           <Title text={product.intro_title} />
           <Text text={product.intro_body} />
@@ -29,14 +29,14 @@ export function StorePreview({ product }: Props) {
       </div>
 
       <div data-section-id="feature">
-        <Section label="3" tone="white">
+        <Section tone="white">
           <Title text={product.feature_title} />
           <Text text={product.feature_body} />
         </Section>
       </div>
 
       <div data-section-id="process">
-      <Section label="4" tone="lime">
+      <Section tone="lime">
         <ImageBlock value={product.process_image} fallback="제조 공정 이미지" height={480} />
         <Title text={product.process_title} margin />
         <Text text={product.process_body} />
@@ -71,7 +71,7 @@ export function StorePreview({ product }: Props) {
       </div>
 
       <div data-section-id="ingredient">
-      <Section label="5" tone="gray">
+      <Section tone="gray">
         <ImageBlock value={product.ingredient_image} fallback="재료 그리드 배너 이미지" height={480} />
         <Title text={product.ingredient_title} margin />
         <Text text={product.ingredient_body} />
@@ -87,7 +87,7 @@ export function StorePreview({ product }: Props) {
       </div>
 
       <div data-section-id="cert">
-      <Section label="6" tone="gray">
+      <Section tone="gray">
         <Subtitle text={product.cert_subtitle} />
         <Title text={product.cert_title} />
         <Text text={product.cert_body} />
@@ -116,7 +116,7 @@ export function StorePreview({ product }: Props) {
       <div data-section-id="heritage">
       <ImageBlock value={product.heritage_image} fallback="브랜드 스토리 이미지 (3:1)" full />
 
-      <Section label="7" tone="gray">
+      <Section tone="gray">
         <Subtitle text={product.heritage_label} />
         <Title text={product.heritage_title} />
         <div className="preview-stats">
@@ -143,7 +143,7 @@ export function StorePreview({ product }: Props) {
       </div>
 
       <div data-section-id="serving">
-      <Section label="8" tone="white">
+      <Section tone="white">
         <Title text={product.serving_title} />
         <Text text={product.serving_subtitle} />
         <ImageBlock value={product.serving_center_image} fallback="서빙 배너 (풀와이드)" full />
@@ -172,7 +172,7 @@ export function StorePreview({ product }: Props) {
       </div>
 
       <div data-section-id="strength">
-      <Section label="9" tone="sand">
+      <Section tone="sand">
         <Title text={product.strength_summary_title} />
         <Text text={product.strength_quote} />
         <div className="preview-circles">
@@ -212,7 +212,7 @@ export function StorePreview({ product }: Props) {
       </div>
 
       <div data-section-id="reveal">
-        <Section label="10" tone="white">
+        <Section tone="white">
           <ImageBlock value={product.reveal_image} fallback="리빌 이미지" height={480} />
           <div style={{ fontSize: 26, fontWeight: 700, margin: "24px 0 14px", color: "#250a00" }}>
             {nl2br(product.reveal_quote)}
@@ -223,7 +223,7 @@ export function StorePreview({ product }: Props) {
       </div>
 
       <div data-section-id="review">
-      <Section label="11" tone="lime">
+      <Section tone="lime">
         <Title text={product.review_title} />
         <Text text={product.review_subtitle} />
         <div className="preview-reviews">
@@ -242,7 +242,7 @@ export function StorePreview({ product }: Props) {
       </div>
 
       <div data-section-id="qna">
-      <Section label="12" tone="white">
+      <Section tone="white">
         <Title text={product.qna_title} />
         <Text text={product.qna_subtitle} />
         <div style={{ maxWidth: 600, margin: "0 auto", textAlign: "left" }}>
@@ -267,7 +267,7 @@ export function StorePreview({ product }: Props) {
       </div>
 
       <div data-section-id="info">
-        <Section label="13" tone="white" align="left">
+        <Section tone="white" align="left">
           <div className="preview-info-header">
             {product.info_제품명 || product.product_id}
           </div>

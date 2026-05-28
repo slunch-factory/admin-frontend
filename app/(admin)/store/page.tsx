@@ -149,8 +149,13 @@ export default function StorePage() {
   }
 
   /**
-   * Sync preview scroll to the topmost visible section in the edit pane.
-   * Sections are tagged with matching `data-section-id` on both sides.
+   * Sync preview scroll to the edit pane, proportionally within each section.
+   *
+   * Edit and preview sections are tagged with matching `data-section-id`.
+   * For each scroll event we compute how far through the current edit section
+   * we are (0–1), then map that to the same proportional offset within the
+   * matching preview section. This gives continuous scrolling that aligns
+   * at section boundaries — no jumpy snapping.
    */
   function handleEditScroll() {
     if (syncingRef.current) return;
@@ -158,29 +163,49 @@ export default function StorePage() {
     const previewEl = previewScrollRef.current;
     if (!editEl || !previewEl) return;
 
-    const sections = Array.from(
+    const editSections = Array.from(
       editEl.querySelectorAll<HTMLElement>("[data-section-id]"),
     );
-    if (sections.length === 0) return;
+    if (editSections.length === 0) return;
 
-    // Find the last section whose top is at or above the edit scroll position
-    const scrollTop = editEl.scrollTop + 8;
-    let current = sections[0];
-    for (const s of sections) {
-      if (s.offsetTop <= scrollTop) current = s;
+    const editScrollY = editEl.scrollTop;
+
+    // Find current edit section (last one whose top is at or above scrollY)
+    let idx = 0;
+    for (let i = 0; i < editSections.length; i++) {
+      if (editSections[i].offsetTop <= editScrollY) idx = i;
       else break;
     }
-    const id = current.dataset.sectionId;
-    if (!id) return;
 
-    const target = previewEl.querySelector<HTMLElement>(
-      `[data-section-id="${id}"]`,
+    const currentEdit = editSections[idx];
+    const nextEdit = editSections[idx + 1];
+    const currentId = currentEdit.dataset.sectionId;
+    if (!currentId) return;
+
+    const currentPreview = previewEl.querySelector<HTMLElement>(
+      `[data-section-id="${currentId}"]`,
     );
-    if (!target) return;
+    if (!currentPreview) return;
+
+    const nextId = nextEdit?.dataset.sectionId;
+    const nextPreview = nextId
+      ? previewEl.querySelector<HTMLElement>(`[data-section-id="${nextId}"]`)
+      : null;
+
+    // How far through the current section (0..1)
+    const editStart = currentEdit.offsetTop;
+    const editEnd = nextEdit ? nextEdit.offsetTop : editEl.scrollHeight;
+    const editSpan = Math.max(1, editEnd - editStart);
+    const progress = Math.max(0, Math.min(1, (editScrollY - editStart) / editSpan));
+
+    // Map to preview
+    const prevStart = currentPreview.offsetTop;
+    const prevEnd = nextPreview ? nextPreview.offsetTop : previewEl.scrollHeight;
+    const prevSpan = Math.max(1, prevEnd - prevStart);
+    const target = prevStart + progress * prevSpan;
 
     syncingRef.current = true;
-    previewEl.scrollTop = target.offsetTop;
-    // Release the sync lock after the browser settles
+    previewEl.scrollTop = target;
     window.requestAnimationFrame(() => {
       syncingRef.current = false;
     });
@@ -223,7 +248,12 @@ export default function StorePage() {
               <div
                 ref={editScrollRef}
                 onScroll={handleEditScroll}
-                style={{ flex: 1, overflowY: "auto", padding: 20 }}
+                style={{
+                  flex: 1,
+                  overflowY: "auto",
+                  padding: 20,
+                  position: "relative", // anchor for descendants' offsetTop
+                }}
               >
                 {loading && <div style={{ padding: 20 }}>불러오는 중...</div>}
                 {error && (
@@ -282,8 +312,7 @@ export default function StorePage() {
               </div>
               <div
                 ref={previewScrollRef}
-                className={`pane-tab-content active preview-frame preview-${viewport}`}
-                style={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}
+                className={`preview-frame preview-${viewport}`}
               >
                 <div className="preview-content">
                   {draft && <StorePreview product={draft} />}
