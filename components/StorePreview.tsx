@@ -5,59 +5,107 @@ import type { StoreProduct } from "@/types/product";
 type Props = { product: StoreProduct };
 
 /**
- * Faithful preview of slunch.co.kr/store detail page.
- * Uses the .preview-* class names ported from slunch-admin.html into globals.css.
+ * Faithful 1:1 port of slunch-admin.html renderPreview() (line 3658-3932).
+ * preview-* CSS 클래스와 인라인 스타일을 원본과 동일하게 사용. 마진/패딩/배경/
+ * 이미지 비율까지 그대로 맞춤. sharing_image / gathering_image / 등 placeholder
+ * 디자인까지 보존.
  */
 export function StorePreview({ product }: Props) {
+  // Helper: get string field (admin StoreProduct may not have every slunch field)
+  const f = (key: string): string => {
+    const v = (product as unknown as Record<string, string>)[key];
+    return typeof v === "string" ? v : "";
+  };
+  const isUrl = (v: string): boolean => v.startsWith("http") || v.startsWith("/uploads/") || v.startsWith("data:image/");
+
   return (
     <div className="preview-wrapper">
-      <div data-section-id="hero">
-        <ImageBlock value={product.hero_image} fallback="히어로 이미지 영역 (1:3 비율)" full />
-        <ImageBlock value={product.feature_image} fallback="디쉬 항공샷 이미지" full />
-        <Section label="1" tone="white">
-          <Title text={product.hero_title} />
-          <Text text={product.hero_desc} />
-        </Section>
+      {/* Hero Image (full-width, 1:3) */}
+      <div className="preview-hero-image" data-section-id="hero" data-field-id="hero_image">
+        {isUrl(f("hero_image")) ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={f("hero_image")} alt="" />
+        ) : (
+          <PreviewPlaceholder
+            label={`히어로 이미지 (1:3) — hero_image${
+              (f("hero_image") || "").replace("[이미지]", "").trim()
+                ? `\n${(f("hero_image") || "").replace("[이미지]", "").substring(0, 60)}`
+                : ""
+            }`}
+            fullHero
+          />
+        )}
       </div>
 
-      <div data-section-id="intro">
-        <Section label="2" tone="sand">
-          <Subtitle text={product.intro_label} />
-          <Title text={product.intro_title} />
-          <Text text={product.intro_body} />
-        </Section>
+      {/* 1-1. Dish Aerial (히어로 바로 아래) */}
+      <div style={{ margin: 0, overflow: "hidden" }} data-field-id="feature_image">
+        {isUrl(f("feature_image")) ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={f("feature_image")} alt="" style={{ width: "100%", display: "block" }} />
+        ) : (
+          <PreviewPlaceholder label="디쉬 항공샷 — feature_image" fullHero />
+        )}
       </div>
 
-      <div data-section-id="feature">
-        <Section label="3" tone="white">
-          <Title text={product.feature_title} />
-          <Text text={product.feature_body} />
-        </Section>
+      {/* 1. Hero */}
+      <div className="preview-section">
+        <div className="preview-badge">1</div>
+        <div className="preview-title" data-field-id="hero_title">{nl2br(f("hero_title"))}</div>
+        <div className="preview-text" data-field-id="hero_desc">{nl2br(f("hero_desc"))}</div>
       </div>
 
-      <div data-section-id="process">
-      <Section label="4" tone="lime">
-        <ImageBlock value={product.process_image} fallback="제조 공정 이미지" height={480} />
-        <Title text={product.process_title} margin />
-        <Text text={product.process_body} />
+      {/* 2. Intro */}
+      <div className="preview-section preview-sec-sand" data-section-id="intro">
+        <div className="preview-badge">2</div>
+        <div className="preview-subtitle" data-field-id="intro_label">{f("intro_label")}</div>
+        <div className="preview-title" data-field-id="intro_title">{nl2br(f("intro_title"))}</div>
+        <div className="preview-text" data-field-id="intro_body">{nl2br(f("intro_body"))}</div>
+      </div>
+
+      {/* 2-1. Sharing (풀와이드) */}
+      <div style={{ margin: 0, overflow: "hidden" }} data-field-id="sharing_image">
+        {isUrl(f("sharing_image")) ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={f("sharing_image")} alt="" style={{ width: "100%", display: "block" }} />
+        ) : (
+          <PreviewPlaceholder label="함께 나눠먹기 이미지 (5:4) — sharing_image" aspectRatio="5 / 4" />
+        )}
+      </div>
+
+      {/* 3. Feature */}
+      <div className="preview-section" data-section-id="feature">
+        <div className="preview-badge">3</div>
+        <div className="preview-title" data-field-id="feature_title">{nl2br(f("feature_title"))}</div>
+        <div className="preview-text" data-field-id="feature_body">{nl2br(f("feature_body"))}</div>
+      </div>
+
+      {/* 4. Process */}
+      <div className="preview-section preview-sec-lime" data-section-id="process">
+        <div className="preview-badge">4</div>
+        <div style={{ margin: "0 -32px", padding: "0 16px" }}>
+          <ImageBlock value={f("process_image")} height="480px" fallback="제조 공정 이미지" fieldId="process_image" />
+        </div>
+        <div className="preview-title" data-field-id="process_title" style={{ marginTop: 24 }}>{nl2br(f("process_title"))}</div>
+        <div className="preview-text" data-field-id="process_body">{nl2br(f("process_body"))}</div>
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            marginTop: 32,
+            gap: 0,
+            marginTop: 45,
             maxWidth: 480,
             marginLeft: "auto",
             marginRight: "auto",
           }}
         >
           {[1, 2, 3, 4, 5].map((i) => {
-            const step = product[`process_${i}` as keyof StoreProduct] as string;
+            const step = f(`process_${i}`);
             if (!step) return null;
-            const nextStep = product[`process_${i + 1}` as keyof StoreProduct] as string;
+            const nextStep = f(`process_${i + 1}`);
             return (
               <div key={i}>
-                <div className="preview-process-step">
+                <div className="preview-process-step" data-field-id={`process_${i}`}>
                   <span className="step-num">{i}</span>
                   <span>{step}</span>
                 </div>
@@ -66,264 +114,349 @@ export function StorePreview({ product }: Props) {
             );
           })}
         </div>
-      </Section>
-
       </div>
 
-      <div data-section-id="ingredient">
-      <Section label="5" tone="gray">
-        <ImageBlock value={product.ingredient_image} fallback="재료 그리드 배너 이미지" height={480} />
-        <Title text={product.ingredient_title} margin />
-        <Text text={product.ingredient_body} />
-        <div style={{ margin: "24px auto 0", maxWidth: "80%" }}>
-          <ImageBlock
-            value={product.ingredient_detail_image}
-            fallback="재료 상세 이미지 (1:1)"
-            square
-          />
+      {/* 5. Ingredient */}
+      <div className="preview-section preview-sec-gray" data-section-id="ingredient">
+        <div className="preview-badge">5</div>
+        <div style={{ margin: "0 -32px", padding: "0 16px" }}>
+          <ImageBlock value={f("ingredient_image")} height="480px" fallback="재료 그리드 배너 이미지" fieldId="ingredient_image" />
         </div>
-      </Section>
-
+        <div className="preview-title" data-field-id="ingredient_title" style={{ marginTop: 24 }}>{nl2br(f("ingredient_title"))}</div>
+        <div className="preview-text" data-field-id="ingredient_body">{nl2br(f("ingredient_body"))}</div>
+        <div style={{ margin: "24px auto 0", maxWidth: "80%", padding: 0 }} data-field-id="ingredient_detail_image">
+          {isUrl(f("ingredient_detail_image")) ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={f("ingredient_detail_image")}
+              alt=""
+              style={{
+                width: "100%",
+                aspectRatio: "1 / 1",
+                objectFit: "cover",
+                display: "block",
+                borderRadius: 12,
+              }}
+            />
+          ) : (
+            <PreviewPlaceholder
+              label="재료 상세 이미지 (1:1) — ingredient_detail_image"
+              square
+            />
+          )}
+        </div>
       </div>
 
-      <div data-section-id="cert">
-      <Section label="6" tone="gray">
-        <Subtitle text={product.cert_subtitle} />
-        <Title text={product.cert_title} />
-        <Text text={product.cert_body} />
+      {/* 6. Certification */}
+      <div className="preview-section preview-sec-gray" data-section-id="cert">
+        <div className="preview-badge">6</div>
+        <div className="preview-subtitle" data-field-id="cert_subtitle">{f("cert_subtitle")}</div>
+        <div className="preview-title" data-field-id="cert_title">{nl2br(f("cert_title"))}</div>
+        <div className="preview-text" data-field-id="cert_body">{nl2br(f("cert_body"))}</div>
         <div className="preview-cert-split">
-          <div className="preview-cert-image">
-            <ImageBlock value={product.cert_image} fallback="인증 메인 이미지" />
+          <div className="preview-cert-image" data-field-id="cert_image">
+            {isUrl(f("cert_image")) ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={f("cert_image")} alt="" />
+            ) : (
+              <PreviewPlaceholder
+                label={`인증 이미지 — cert_image${
+                  (f("cert_image") || "").replace("[이미지]", "").trim()
+                    ? `\n${(f("cert_image") || "").replace("[이미지]", "").substring(0, 60)}`
+                    : ""
+                }`}
+                height="100%"
+              />
+            )}
           </div>
           <div className="preview-cert-list">
             {[1, 2, 3, 4, 5].map((i) => {
-              const title = product[`cert_${i}_title` as keyof StoreProduct] as string;
-              const desc = product[`cert_${i}_desc` as keyof StoreProduct] as string;
+              const title = f(`cert_${i}_title`);
               if (!title) return null;
               return (
                 <div key={i} className="preview-cert-item">
-                  <span className="preview-cert-name">{title}</span>
-                  <span className="preview-cert-desc">{desc}</span>
+                  <span className="preview-cert-name" data-field-id={`cert_${i}_title`}>{title}</span>
+                  <span className="preview-cert-desc" data-field-id={`cert_${i}_desc`}>{f(`cert_${i}_desc`)}</span>
                 </div>
               );
             })}
           </div>
         </div>
-      </Section>
-
       </div>
 
-      <div data-section-id="heritage">
-      <ImageBlock value={product.heritage_image} fallback="브랜드 스토리 이미지 (3:1)" full />
+      {/* 7. Heritage Image (full-width 1:3) */}
+      <div className="preview-hero-image" data-section-id="heritage" data-field-id="heritage_image">
+        {isUrl(f("heritage_image")) ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={f("heritage_image")} alt="" />
+        ) : (
+          <PreviewPlaceholder
+            label="브랜드 스토리 이미지 (3:1) — heritage_image"
+            fullHero
+          />
+        )}
+      </div>
 
-      <Section label="7" tone="gray">
-        <Subtitle text={product.heritage_label} />
-        <Title text={product.heritage_title} />
+      {/* 7. Heritage */}
+      <div className="preview-section preview-sec-gray">
+        <div className="preview-badge">7</div>
+        <div className="preview-subtitle" data-field-id="heritage_label">{f("heritage_label")}</div>
+        <div className="preview-title" data-field-id="heritage_title">{nl2br(f("heritage_title"))}</div>
         <div className="preview-stats">
-          {[1, 2, 3].map((i) => {
-            const num = product[`heritage_stat${i}_num` as keyof StoreProduct] as string;
-            const unit = product[`heritage_stat${i}_unit` as keyof StoreProduct] as string;
-            const label = product[`heritage_stat${i}_label` as keyof StoreProduct] as string;
-            return (
-              <div key={i} className="preview-stat">
-                <div className="preview-stat-number">
-                  {num}
-                  <span className="preview-stat-unit">{unit}</span>
-                </div>
-                <div className="preview-stat-label">{label}</div>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="preview-stat" data-field-id={`heritage_stat${i}_num`}>
+              <div className="preview-stat-number">
+                {f(`heritage_stat${i}_num`)}
+                <span className="preview-stat-unit" data-field-id={`heritage_stat${i}_unit`}>{f(`heritage_stat${i}_unit`)}</span>
               </div>
-            );
-          })}
+              <div className="preview-stat-label" data-field-id={`heritage_stat${i}_label`}>{f(`heritage_stat${i}_label`)}</div>
+            </div>
+          ))}
         </div>
-        <div style={{ marginTop: 48 }}>
-          <Text text={product.heritage_body} />
-        </div>
-      </Section>
-
+        <div className="preview-text" data-field-id="heritage_body" style={{ marginTop: 72 }}>{nl2br(f("heritage_body"))}</div>
       </div>
 
-      <div data-section-id="serving">
-      <Section label="8" tone="white">
-        <Title text={product.serving_title} />
-        <Text text={product.serving_subtitle} />
-        <ImageBlock value={product.serving_center_image} fallback="서빙 배너 (풀와이드)" full />
+      {/* 8. Serving */}
+      <div className="preview-section" data-section-id="serving">
+        <div className="preview-badge">8</div>
+        <div className="preview-title" data-field-id="serving_title">{nl2br(f("serving_title"))}</div>
+        <div className="preview-text" data-field-id="serving_subtitle" style={{ marginBottom: 24 }}>{nl2br(f("serving_subtitle"))}</div>
+        <div style={{ margin: "0 -48px 24px", overflow: "hidden" }} data-field-id="serving_center_image">
+          {isUrl(f("serving_center_image")) ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={f("serving_center_image")} alt="" style={{ width: "100%", display: "block" }} />
+          ) : (
+            <PreviewPlaceholder
+              label="서빙 배너 이미지 (풀와이드) — serving_center_image"
+              fullHero
+            />
+          )}
+        </div>
         <div className="preview-servings">
           {[1, 2, 3, 4, 5].map((i) => {
-            const title = product[`serving_${i}_title` as keyof StoreProduct] as string;
-            const desc = product[`serving_${i}_desc` as keyof StoreProduct] as string;
-            const img = product[`serving_${i}_image` as keyof StoreProduct] as string;
+            const title = f(`serving_${i}_title`);
+            const desc = f(`serving_${i}_desc`);
+            const img = f(`serving_${i}_image`);
             if (!title) return null;
             return (
               <div key={i} className="preview-serving-item">
                 <div style={{ width: 180, height: 180, overflow: "hidden", borderRadius: 12 }}>
-                  <ImageBlock value={img} fallback="" square />
+                  <ImageBlock
+                    value={img}
+                    height="180px"
+                    fallback={`서빙 ${i}`}
+                    square
+                    fieldId={`serving_${i}_image`}
+                  />
                 </div>
-                <div className="preview-serving-title">{title}</div>
-                <div className="preview-serving-desc">{nl2br(desc)}</div>
+                <div className="preview-serving-title" data-field-id={`serving_${i}_title`}>{title}</div>
+                <div className="preview-serving-desc" data-field-id={`serving_${i}_desc`}>{nl2br(desc)}</div>
               </div>
             );
           })}
         </div>
-        <div style={{ marginTop: 32, textDecoration: "underline", color: "#6e5035" }}>
-          <Text text={product.serving_tip} />
+        <div className="preview-text" data-field-id="serving_tip" style={{ marginTop: 48, textDecoration: "underline", color: "#6e5035", fontSize: 15 }}>
+          {nl2br(f("serving_tip"))}
         </div>
-      </Section>
-
       </div>
 
-      <div data-section-id="strength">
-      <Section label="9" tone="sand">
-        <Title text={product.strength_summary_title} />
-        <Text text={product.strength_quote} />
+      {/* 9. Strength */}
+      <div className="preview-section preview-sec-sand" data-section-id="strength">
+        <div className="preview-badge">9</div>
+        <div className="preview-title" data-field-id="strength_summary_title">{nl2br(f("strength_summary_title"))}</div>
+        <div className="preview-subtitle" data-field-id="strength_quote" style={{ letterSpacing: 0, textTransform: "none", color: "#555" }}>
+          {nl2br(f("strength_quote"))}
+        </div>
         <div className="preview-circles">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="preview-circle">
-              <div className="preview-circle-main">
-                {product[`strength_circle${i}_main` as keyof StoreProduct] as string}
-              </div>
-              <div className="preview-circle-sub">
-                {product[`strength_circle${i}_sub` as keyof StoreProduct] as string}
-              </div>
+            <div key={i} className="preview-circle" data-field-id={`strength_circle${i}_main`}>
+              <div className="preview-circle-main">{f(`strength_circle${i}_main`)}</div>
+              <div className="preview-circle-sub" data-field-id={`strength_circle${i}_sub`}>{f(`strength_circle${i}_sub`)}</div>
             </div>
           ))}
         </div>
         <div className="preview-strengths">
           {[1, 2, 3, 4, 5].map((i) => {
-            const title = product[`strength${i}_title` as keyof StoreProduct] as string;
-            const desc = product[`strength${i}_desc` as keyof StoreProduct] as string;
-            const img = product[`strength${i}_image` as keyof StoreProduct] as string;
+            const title = f(`strength${i}_title`);
+            const desc = f(`strength${i}_desc`);
+            const img = f(`strength${i}_image`);
             if (!title && !desc) return null;
             return (
               <div key={i} className="preview-strength-item">
                 <div className="strength-img">
-                  <ImageBlock value={img} fallback="" />
+                  <ImageBlock
+                    value={img}
+                    height="100%"
+                    fallback={`강점 ${i} — strength${i}_image`}
+                    fieldId={`strength${i}_image`}
+                  />
                 </div>
                 <div className="preview-strength-text">
                   <div className="preview-strength-num">{i}</div>
-                  <div className="preview-strength-title">{title}</div>
-                  <div className="preview-strength-desc">{nl2br(desc)}</div>
+                  <div className="preview-strength-title" data-field-id={`strength${i}_title`}>{title}</div>
+                  <div className="preview-strength-desc" data-field-id={`strength${i}_desc`}>{nl2br(desc)}</div>
                 </div>
               </div>
             );
           })}
         </div>
-      </Section>
-
       </div>
 
-      <div data-section-id="reveal">
-        <Section label="10" tone="white">
-          <ImageBlock value={product.reveal_image} fallback="리빌 이미지" height={480} />
-          <div style={{ fontSize: 26, fontWeight: 700, margin: "24px 0 14px", color: "#250a00" }}>
-            {nl2br(product.reveal_quote)}
-          </div>
-          <Text text={product.reveal_body} />
-        </Section>
-        <ImageBlock value={product.gathering_image} fallback="다같이 모여먹기 이미지 (5:4)" full />
+      {/* 10. Reveal */}
+      <div className="preview-section" data-section-id="reveal">
+        <div className="preview-badge">10</div>
+        <div style={{ margin: "0 -32px", padding: "0 16px" }}>
+          <ImageBlock value={f("reveal_image")} height="480px" fallback="리빌 이미지" fieldId="reveal_image" />
+        </div>
+        <div data-field-id="reveal_quote" style={{ fontSize: 26, fontWeight: 700, margin: "24px 0 14px", textAlign: "center", color: "#250a00" }}>
+          {nl2br(f("reveal_quote"))}
+        </div>
+        <div className="preview-text" data-field-id="reveal_body">{nl2br(f("reveal_body"))}</div>
       </div>
 
-      <div data-section-id="review">
-      <Section label="11" tone="lime">
-        <Title text={product.review_title} />
-        <Text text={product.review_subtitle} />
+      {/* 10-1. Gathering (풀와이드 5:4) */}
+      <div style={{ margin: 0, overflow: "hidden" }} data-field-id="gathering_image">
+        {isUrl(f("gathering_image")) ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={f("gathering_image")}
+            alt=""
+            style={{ width: "100%", aspectRatio: "5 / 4", objectFit: "cover", display: "block" }}
+          />
+        ) : (
+          <PreviewPlaceholder
+            label="다같이 모여먹기 이미지 (5:4) — gathering_image"
+            aspectRatio="5 / 4"
+          />
+        )}
+      </div>
+
+      {/* 11. Review */}
+      <div className="preview-section preview-sec-lime" data-section-id="review">
+        <div className="preview-badge">11</div>
+        <div className="preview-title" data-field-id="review_title">{nl2br(f("review_title"))}</div>
+        <div className="preview-text" data-field-id="review_subtitle" style={{ marginBottom: 20 }}>{nl2br(f("review_subtitle"))}</div>
         <div className="preview-reviews">
           {[1, 2, 3, 4, 5, 6, 7].map((i) => {
-            const r = product[`review_${i}` as keyof StoreProduct] as string;
+            const r = f(`review_${i}`);
             if (!r) return null;
             return (
-              <div key={i} className="preview-review-item">
+              <div key={i} className="preview-review-item" data-field-id={`review_${i}`}>
                 &ldquo;{r}&rdquo;
               </div>
             );
           })}
         </div>
-      </Section>
-
       </div>
 
-      <div data-section-id="qna">
-      <Section label="12" tone="white">
-        <Title text={product.qna_title} />
-        <Text text={product.qna_subtitle} />
+      {/* 12. QnA */}
+      <div className="preview-section" data-section-id="qna">
+        <div className="preview-badge">12</div>
+        <div className="preview-title" data-field-id="qna_title">{nl2br(f("qna_title"))}</div>
+        <div className="preview-text" data-field-id="qna_subtitle" style={{ marginBottom: 24 }}>{nl2br(f("qna_subtitle"))}</div>
         <div style={{ maxWidth: 600, margin: "0 auto", textAlign: "left" }}>
           {[1, 2, 3].map((i) => {
-            const q = product[`qna_q${i}` as keyof StoreProduct] as string;
-            const a = product[`qna_a${i}` as keyof StoreProduct] as string;
+            const q = f(`qna_q${i}`);
+            const a = f(`qna_a${i}`);
             if (!q) return null;
             return (
               <div key={i} style={{ padding: "18px 0", borderBottom: "1px solid #c9bcbe" }}>
-                <div style={{ fontWeight: 700, marginBottom: 10, fontSize: 18 }}>Q. {q}</div>
-                <div style={{ color: "#666", fontSize: 17, lineHeight: 1.6 }}>A. {nl2br(a)}</div>
+                <div data-field-id={`qna_q${i}`} style={{ fontWeight: 700, marginBottom: 10, color: "#250a00", fontSize: 18 }}>
+                  Q. {q}
+                </div>
+                <div data-field-id={`qna_a${i}`} style={{ color: "#666", fontSize: 17, lineHeight: 1.6 }}>
+                  A. {nl2br(a)}
+                </div>
               </div>
             );
           })}
         </div>
-      </Section>
-
       </div>
 
-      <div data-section-id="ending">
-        <ImageBlock value={product.ending_image} fallback="제품 엔딩샷" full />
+      {/* Ending Image */}
+      <div className="preview-hero-image" data-section-id="ending" data-field-id="ending_image">
+        {isUrl(f("ending_image")) ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src={f("ending_image")} alt="" />
+        ) : (
+          <PreviewPlaceholder
+            label="제품 엔딩샷 (패키지+내용물 병렬) — ending_image"
+            fullHero
+          />
+        )}
       </div>
 
-      <div data-section-id="info">
-        <Section tone="white" align="left">
-          <div className="preview-info-header">
-            {product.info_제품명 || product.product_id}
+      {/* 13. Info (OH NUTTY clean line style) */}
+      <div className="preview-section" style={{ padding: "40px 48px", textAlign: "left" }} data-section-id="info">
+        <div className="preview-info-header">{f("info_제품명") || f("product_id") || product.product_id}</div>
+        <InfoGrid product={product} f={f} />
+        {f("info_알레르기") && (
+          <div className="preview-info-allergy" style={{ marginTop: 16 }}>
+            알레르기 유발물질: {f("info_알레르기")}
           </div>
-          <InfoGrid product={product} />
-        </Section>
+        )}
+        {f("info_참고사항") && <div className="preview-info-notes">{f("info_참고사항")}</div>}
       </div>
     </div>
   );
 }
 
-function InfoGrid({ product }: { product: StoreProduct }) {
-  const pairKeys: Array<keyof StoreProduct> = [
-    "info_제품명",
-    "info_식품유형",
-    "info_품목보고번호",
-    "info_내용량",
-    "info_내포장재질",
-  ];
-  const labels: Record<string, string> = {
-    info_제품명: "제품명",
-    info_식품유형: "식품유형",
-    info_품목보고번호: "품목보고번호",
-    info_내용량: "내용량",
-    info_내포장재질: "내포장재질",
-  };
+/* =========================================================================
+   Info section (matches slunch-admin renderPreview info block)
+   ========================================================================= */
 
-  const filledPairs = pairKeys.filter((k) => product[k]);
+function InfoGrid({
+  product,
+  f,
+}: {
+  product: StoreProduct;
+  f: (key: string) => string;
+}) {
+  void product;
+  const halfKeys = ["제품명", "식품유형", "품목보고번호", "내용량", "내포장재질", "유통기한"];
+  const filled = halfKeys.filter((k) => f(`info_${k}`));
 
-  const rows = [];
-  for (let i = 0; i < filledPairs.length; i += 2) {
-    const a = filledPairs[i];
-    const b = filledPairs[i + 1];
-    rows.push(
-      <div key={i} className="preview-info-row">
+  const pairRows: React.ReactNode[] = [];
+  for (let i = 0; i < filled.length; i += 2) {
+    const a = filled[i];
+    const b = filled[i + 1];
+    pairRows.push(
+      <div key={`p-${i}`} className="preview-info-row">
         <div className="preview-info-cell">
-          <div className="preview-info-key">{labels[a]}</div>
-          <div className="preview-info-val">{product[a] as string}</div>
+          <div className="preview-info-key">{a}</div>
+          <div className="preview-info-val">{f(`info_${a}`)}</div>
         </div>
         {b && (
           <div className="preview-info-cell">
-            <div className="preview-info-key">{labels[b]}</div>
-            <div className="preview-info-val">{product[b] as string}</div>
+            <div className="preview-info-key">{b}</div>
+            <div className="preview-info-val">{f(`info_${b}`)}</div>
           </div>
         )}
       </div>,
     );
   }
 
+  const fullKeys = ["제조원", "소분원", "판매원"];
+  const fullRows = fullKeys
+    .filter((k) => f(`info_${k}`))
+    .map((k) => (
+      <div key={`f-${k}`} className="preview-info-row">
+        <div className="preview-info-cell full-row">
+          <div className="preview-info-key">{k}</div>
+          <div className="preview-info-val">{f(`info_${k}`)}</div>
+        </div>
+      </div>
+    ));
+
   return (
     <div className="preview-info-grid">
-      {rows}
-      {product.info_원료명 && (
+      {pairRows}
+      {fullRows}
+      {f("info_원료명") && (
         <div className="preview-info-row">
           <div className="preview-info-cell full-row">
             <div className="preview-info-key">원료명</div>
-            <div className="preview-info-val">{nl2br(product.info_원료명)}</div>
+            <div className="preview-info-val">{nl2br(f("info_원료명"))}</div>
           </div>
         </div>
       )}
@@ -331,98 +464,119 @@ function InfoGrid({ product }: { product: StoreProduct }) {
   );
 }
 
-function Section({
-  label,
-  tone,
-  align,
-  children,
-}: {
-  label?: string;
-  tone: "white" | "sand" | "lime" | "gray";
-  align?: "left" | "center";
-  children: React.ReactNode;
-}) {
-  const cls = ["preview-section"];
-  if (tone === "sand") cls.push("preview-sec-sand");
-  if (tone === "lime") cls.push("preview-sec-lime");
-  if (tone === "gray") cls.push("preview-sec-gray");
-  return (
-    <div className={cls.join(" ")} style={align === "left" ? { textAlign: "left" } : undefined}>
-      {label && <div className="preview-badge">{label}</div>}
-      {children}
-    </div>
-  );
-}
-
-function Title({ text, margin }: { text: string; margin?: boolean }) {
-  return <div className="preview-title" style={margin ? { marginTop: 24 } : undefined}>{nl2br(text)}</div>;
-}
-
-function Subtitle({ text }: { text: string }) {
-  return <div className="preview-subtitle">{text}</div>;
-}
-
-function Text({ text }: { text: string }) {
-  return <div className="preview-text">{nl2br(text)}</div>;
-}
+/* =========================================================================
+   Image block — used inside sections (non full-width)
+   ========================================================================= */
 
 function ImageBlock({
   value,
-  fallback,
-  full,
-  square,
   height,
+  fallback,
+  square,
+  fieldId,
 }: {
   value: string;
+  height?: string;
   fallback: string;
-  full?: boolean;
   square?: boolean;
-  height?: number;
+  fieldId?: string;
 }) {
-  const isUrl = /^(https?:\/\/|\/uploads\/|data:image\/)/.test(value || "");
+  const isUrl =
+    value.startsWith("http") || value.startsWith("/uploads/") || value.startsWith("data:image/");
   if (isUrl) {
     return (
-      <div className={full ? "preview-hero-image" : undefined} style={!full ? { margin: "0 auto" } : undefined}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={value}
-          alt=""
-          style={{
-            width: "100%",
-            display: "block",
-            objectFit: "cover",
-            ...(square ? { aspectRatio: "1 / 1" } : {}),
-            ...(height ? { maxHeight: height } : {}),
-            borderRadius: square ? 12 : 0,
-          }}
-        />
-      </div>
+      /* eslint-disable-next-line @next/next/no-img-element */
+      <img
+        src={value}
+        alt=""
+        data-field-id={fieldId}
+        style={{
+          width: "100%",
+          maxWidth: "100%",
+          height: height || "auto",
+          objectFit: "cover",
+          borderRadius: 12,
+          display: "block",
+          boxSizing: "border-box",
+        }}
+      />
     );
   }
-  if (!fallback) return null;
   return (
-    <div
-      style={{
-        padding: 40,
-        textAlign: "center",
-        color: "#999",
-        fontSize: 13,
-        background: "#f3eded",
-        borderRadius: square ? 12 : 0,
-        ...(square ? { aspectRatio: "1 / 1", display: "flex", alignItems: "center", justifyContent: "center" } : {}),
-      }}
-    >
-      {fallback}
+    <div data-field-id={fieldId}>
+      <PreviewPlaceholder
+        label={fallback || "이미지"}
+        height={height}
+        square={square}
+      />
     </div>
   );
 }
 
+/* =========================================================================
+   Preview placeholder — 이미지 미설정 시 점선 박스 + 아이콘 + 라벨.
+   섹션 배경(white/sand/lime/gray) 어디에서도 보이도록 translucent 톤 사용.
+   ========================================================================= */
+
+function PreviewPlaceholder({
+  label,
+  height,
+  aspectRatio,
+  square,
+  fullHero,
+}: {
+  label?: string;
+  height?: string;
+  aspectRatio?: string;
+  square?: boolean;
+  fullHero?: boolean;
+}) {
+  const style: React.CSSProperties = {
+    width: "100%",
+    padding: 20,
+    border: "2px dashed rgba(110,80,53,0.35)",
+    borderRadius: fullHero ? 0 : 12,
+    background: "rgba(232,226,226,0.55)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    color: "#6e5035",
+    fontSize: 13,
+    fontWeight: 600,
+    lineHeight: 1.5,
+    boxSizing: "border-box",
+    textAlign: "center",
+  };
+  if (square) {
+    style.aspectRatio = "1 / 1";
+  } else if (aspectRatio) {
+    style.aspectRatio = aspectRatio;
+  } else if (height) {
+    style.minHeight = height;
+  } else if (fullHero) {
+    style.minHeight = 220;
+  }
+  return (
+    <div style={style}>
+      <span style={{ fontSize: 32, opacity: 0.45, lineHeight: 1 }}>🖼</span>
+      {label && <span>{label}</span>}
+    </div>
+  );
+}
+
+/* =========================================================================
+   nl2br helper — converts \n to <br/>
+   ========================================================================= */
+
 function nl2br(text: string | undefined): React.ReactNode {
   if (!text) return null;
-  return text.split("\n").map((line, i, arr) => (
+  const lines = text.split("\n");
+  return lines.map((line, i) => (
     <span key={i}>
       {line}
-      {i < arr.length - 1 && <br />}
+      {i < lines.length - 1 && <br />}
     </span>
   ));
 }

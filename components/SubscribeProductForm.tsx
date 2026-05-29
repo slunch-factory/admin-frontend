@@ -80,7 +80,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
             />
           </Field>
         </Row>
-        <Field label="메뉴명" en="NAME">
+        <Field label="메뉴명" en="NAME" fieldId="field-name">
           <input
             type="text"
             value={product.name}
@@ -89,7 +89,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
           />
         </Field>
         <Row>
-          <Field label="등급" en="TIER">
+          <Field label="등급" en="TIER" fieldId="field-tier">
             <input
               type="text"
               value={product.tier}
@@ -97,7 +97,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
               className="form-input"
             />
           </Field>
-          <Field label="식단" en="DIET">
+          <Field label="식단" en="DIET" fieldId="field-diet">
             <input
               type="text"
               value={product.diet}
@@ -123,7 +123,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
               className="form-input"
             />
           </Field>
-          <Field label="판매가" en="PRICE">
+          <Field label="판매가" en="PRICE" fieldId="field-price">
             <input
               type="number"
               value={product.price}
@@ -140,7 +140,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
         open={open.selling}
         onToggle={() => toggle("selling")}
       >
-        <Field label="TAGLINE" en="TAGLINE">
+        <Field label="TAGLINE" en="TAGLINE" fieldId="field-tagline">
           <input
             type="text"
             value={product.tagline}
@@ -148,7 +148,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
             className="form-input"
           />
         </Field>
-        <Field label="DESCRIPTION" en="DESCRIPTION">
+        <Field label="DESCRIPTION" en="DESCRIPTION" fieldId="field-description">
           <textarea
             value={product.description}
             onChange={(e) => update("description", e.target.value)}
@@ -158,7 +158,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
         </Field>
 
         {product.selling_points.map((sp, idx) => (
-          <div key={idx} className="selling-point-card">
+          <div key={idx} className="selling-point-card" data-field-id={`selling-${idx}`}>
             <div className="selling-point-head">
               <span className="form-label-en">소구 포인트 #{idx + 1}</span>
               <button
@@ -196,7 +196,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
           + 소구 포인트 추가
         </button>
 
-        <Field label="해시태그" en="HASHTAGS">
+        <Field label="해시태그" en="HASHTAGS" fieldId="field-hashtags">
           <input
             type="text"
             value={product.hashtags}
@@ -204,7 +204,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
             className="form-input"
           />
         </Field>
-        <Field label="조리 팁" en="COOKING TIP">
+        <Field label="조리 팁" en="COOKING TIP" fieldId="field-cooking-tip">
           <textarea
             value={product.cooking_tip}
             onChange={(e) => update("cooking_tip", e.target.value)}
@@ -220,13 +220,13 @@ export function SubscribeProductForm({ product, onChange }: Props) {
         open={open.image}
         onToggle={() => toggle("image")}
       >
-        <Field label="대표 이미지" en="IMAGE URL" badge="IMAGE">
+        <Field label="대표 이미지" en="IMAGE URL" badge="IMAGE" fieldId="field-image-url">
           <ImageUploadField
             value={product.image_url}
             onChange={(v) => update("image_url", v)}
           />
         </Field>
-        <Field label="상세 페이지 URL" en="DETAIL URL">
+        <Field label="상세 페이지 URL" en="DETAIL URL" fieldId="field-detail-url">
           <input
             type="text"
             value={product.detail_url}
@@ -243,7 +243,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
         onToggle={() => toggle("nutrition")}
       >
         <Row>
-          <Field label="kcal" en="KCAL">
+          <Field label="kcal" en="KCAL" fieldId="nutri-kcal">
             <input
               type="number"
               value={product.nutrients.kcal}
@@ -251,7 +251,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
               className="form-input"
             />
           </Field>
-          <Field label="단백질 (g)" en="PROTEIN">
+          <Field label="단백질 (g)" en="PROTEIN" fieldId="nutri-protein">
             <input
               type="number"
               value={product.nutrients.protein}
@@ -259,7 +259,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
               className="form-input"
             />
           </Field>
-          <Field label="탄수화물 (g)" en="CARBS">
+          <Field label="탄수화물 (g)" en="CARBS" fieldId="nutri-carbs">
             <input
               type="number"
               value={product.nutrients.carbs}
@@ -269,7 +269,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
           </Field>
         </Row>
         <Row>
-          <Field label="지방 (g)" en="FAT">
+          <Field label="지방 (g)" en="FAT" fieldId="nutri-fat">
             <input
               type="number"
               value={product.nutrients.fat}
@@ -277,7 +277,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
               className="form-input"
             />
           </Field>
-          <Field label="나트륨 (mg)" en="SODIUM">
+          <Field label="나트륨 (mg)" en="SODIUM" fieldId="nutri-sodium">
             <input
               type="number"
               value={product.nutrients.sodium}
@@ -286,7 +286,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
             />
           </Field>
         </Row>
-        <Field label="알러젠 (쉼표 구분)" en="ALLERGENS">
+        <Field label="알러젠 (쉼표 구분)" en="ALLERGENS" fieldId="field-allergens">
           <input
             type="text"
             value={product.allergens.join(", ")}
@@ -302,7 +302,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
             className="form-input"
           />
         </Field>
-        <Field label="원료 (재료 — 미리보기 ingredients 리스트에 사용)" en="INGREDIENTS">
+        <Field label="원료 (재료 — 미리보기 ingredients 리스트에 사용)" en="INGREDIENTS" fieldId="field-ingredients">
           <textarea
             value={product.ingredients}
             onChange={(e) => update("ingredients", e.target.value)}
@@ -319,7 +319,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
         open={open.info}
         onToggle={() => toggle("info")}
       >
-        <Field label="제품명" en="INFO 제품명">
+        <Field label="제품명" en="INFO 제품명" fieldId="info-제품명">
           <input
             type="text"
             value={product.info_제품명}
@@ -328,7 +328,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
           />
         </Field>
         <Row>
-          <Field label="식품유형" en="INFO 식품유형">
+          <Field label="식품유형" en="INFO 식품유형" fieldId="info-식품유형">
             <input
               type="text"
               value={product.info_식품유형}
@@ -336,7 +336,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
               className="form-input"
             />
           </Field>
-          <Field label="품목보고번호" en="INFO 품목보고번호">
+          <Field label="품목보고번호" en="INFO 품목보고번호" fieldId="info-품목보고번호">
             <input
               type="text"
               value={product.info_품목보고번호}
@@ -346,7 +346,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
           </Field>
         </Row>
         <Row>
-          <Field label="내용량" en="INFO 내용량">
+          <Field label="내용량" en="INFO 내용량" fieldId="info-내용량">
             <input
               type="text"
               value={product.info_내용량}
@@ -354,7 +354,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
               className="form-input"
             />
           </Field>
-          <Field label="유통기한" en="INFO 유통기한">
+          <Field label="유통기한" en="INFO 유통기한" fieldId="info-유통기한">
             <input
               type="text"
               value={product.info_유통기한}
@@ -363,7 +363,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
             />
           </Field>
         </Row>
-        <Field label="제조원" en="INFO 제조원">
+        <Field label="제조원" en="INFO 제조원" fieldId="info-제조원">
           <input
             type="text"
             value={product.info_제조원}
@@ -371,7 +371,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
             className="form-input"
           />
         </Field>
-        <Field label="소분원" en="INFO 소분원">
+        <Field label="소분원" en="INFO 소분원" fieldId="info-소분원">
           <input
             type="text"
             value={product.info_소분원}
@@ -379,7 +379,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
             className="form-input"
           />
         </Field>
-        <Field label="판매원" en="INFO 판매원">
+        <Field label="판매원" en="INFO 판매원" fieldId="info-판매원">
           <input
             type="text"
             value={product.info_판매원}
@@ -387,7 +387,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
             className="form-input"
           />
         </Field>
-        <Field label="원료명" en="INFO 원료명">
+        <Field label="원료명" en="INFO 원료명" fieldId="info-원료명">
           <textarea
             value={product.info_원료명}
             onChange={(e) => update("info_원료명", e.target.value)}
@@ -395,7 +395,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
             className="form-input form-textarea"
           />
         </Field>
-        <Field label="알레르기" en="INFO 알레르기">
+        <Field label="알레르기" en="INFO 알레르기" fieldId="info-알레르기">
           <input
             type="text"
             value={product.info_알레르기}
@@ -403,7 +403,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
             className="form-input"
           />
         </Field>
-        <Field label="참고사항" en="INFO 참고사항">
+        <Field label="참고사항" en="INFO 참고사항" fieldId="info-참고사항">
           <textarea
             value={product.info_참고사항}
             onChange={(e) => update("info_참고사항", e.target.value)}
@@ -448,20 +448,22 @@ function Field({
   label,
   en,
   badge,
+  fieldId,
   children,
 }: {
   label?: string;
   en: string;
   badge?: string;
+  fieldId?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="form-field" style={{ marginBottom: 8 }}>
+    <div className="form-field" style={{ marginBottom: 8 }} data-field-id={fieldId}>
       <div className="form-label-row">
         <span className="form-label-en">{en}</span>
         {badge && <span className="form-label-badge">{badge}</span>}
         {label && label !== en && (
-          <span style={{ fontSize: 11, color: "var(--text-dim)" }}>{label}</span>
+          <span style={{ fontSize: 12, color: "var(--text-dim)" }}>{label}</span>
         )}
       </div>
       {children}
@@ -541,9 +543,25 @@ function ImageUploadField({ value, onChange }: { value: string; onChange: (v: st
         />
       </div>
       {error && <div className="image-field-error">{error}</div>}
-      {isImageRef && (
+      {isImageRef ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={value} alt="" className="image-field-preview" />
+      ) : (
+        <button
+          type="button"
+          className="image-field-placeholder"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          aria-label="이미지 업로드"
+        >
+          <span className="image-field-placeholder-icon">🖼</span>
+          <span className="image-field-placeholder-label">
+            {uploading ? "업로드 중..." : "이미지를 업로드하세요"}
+          </span>
+          <span className="image-field-placeholder-sub">
+            클릭해서 파일 선택 · PNG/JPG/WebP, 최대 4MB
+          </span>
+        </button>
       )}
     </div>
   );

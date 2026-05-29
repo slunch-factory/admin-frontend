@@ -88,7 +88,7 @@ function FieldRow({
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="form-field">
+    <div className="form-field" data-field-id={field.key as string}>
       <div className="form-label-row">
         <span className="form-label-en">{field.labelEn}</span>
         {field.type === "image" && <span className="form-label-badge">IMAGE</span>}
@@ -148,7 +148,7 @@ function ImageField({ value, onChange }: { value: string; onChange: (v: string) 
         className="form-input form-input-dashed"
       />
 
-      <div className="image-field-actions">
+      <div className="image-field-actions" style={{ alignItems: "flex-start" }}>
         <button
           type="button"
           className="upload-btn"
@@ -166,6 +166,12 @@ function ImageField({ value, onChange }: { value: string; onChange: (v: string) 
             삭제
           </button>
         )}
+        {isPromptText && (
+          <div className="image-field-hint" style={{ flex: 1, minWidth: 0 }}>
+            <span className="image-field-hint-label">DALL-E 프롬프트:</span>{" "}
+            {String(value).replace(/^\[이미지\]\s*/, "")}
+          </div>
+        )}
         <input
           ref={fileRef}
           type="file"
@@ -175,18 +181,29 @@ function ImageField({ value, onChange }: { value: string; onChange: (v: string) 
         />
       </div>
 
-      {isPromptText && (
-        <div className="image-field-hint">
-          <span className="image-field-hint-label">DALL-E 프롬프트:</span>{" "}
-          {String(value).replace(/^\[이미지\]\s*/, "")}
-        </div>
-      )}
-
       {error && <div className="image-field-error">{error}</div>}
 
-      {isImageRef && (
+      {isImageRef ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={value} alt="" className="image-field-preview" />
+      ) : (
+        <button
+          type="button"
+          className="image-field-placeholder"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          aria-label="이미지 업로드"
+        >
+          <span className="image-field-placeholder-icon">🖼</span>
+          <span className="image-field-placeholder-label">
+            {uploading ? "업로드 중..." : "이미지를 업로드하세요"}
+          </span>
+          <span className="image-field-placeholder-sub">
+            {isPromptText
+              ? "DALL-E 프롬프트가 입력되어 있습니다. 클릭해서 실제 이미지로 교체"
+              : "클릭해서 파일 선택 · PNG/JPG/WebP, 최대 4MB"}
+          </span>
+        </button>
       )}
     </div>
   );
