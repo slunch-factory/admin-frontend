@@ -176,7 +176,7 @@ export function SubscribePreview({ product: p }: Props) {
         <div className="slp-body">
           {/* basic: 제품명 / 태그라인 / 뱃지 / 가격 */}
           <div data-section-id="basic" style={{ padding: "4px 6px", margin: "-4px -6px 0" }}>
-            {/* 제품명 */}
+            {/* 제품명 — H1, 위계 최상위 */}
             <div
               data-field-id="field-name"
               style={{
@@ -195,23 +195,23 @@ export function SubscribePreview({ product: p }: Props) {
             {p.tagline && (
               <div
                 data-field-id="field-tagline"
-                style={{ marginTop: 10, fontSize: 13, color: "rgba(0,0,0,0.42)", lineHeight: 1.6, fontFamily: sf }}
+                style={{ marginTop: 8, fontSize: 12, color: "rgba(0,0,0,0.5)", lineHeight: 1.55, fontFamily: sf }}
               >
                 {p.tagline}
               </div>
             )}
 
             {/* 뱃지 */}
-            <div style={{ marginTop: 16, display: "flex", flexWrap: "wrap", gap: 6 }}>
+            <div style={{ marginTop: 14, display: "flex", flexWrap: "wrap", gap: 6 }}>
               {p.diet && (
                 <span
                   data-field-id="field-diet"
                   style={{
                     display: "inline-block",
-                    padding: "4px 11px",
+                    padding: "3px 10px",
                     border: "1px solid #111",
                     borderRadius: 100,
-                    fontSize: 11,
+                    fontSize: 10.5,
                     fontWeight: 500,
                     color: "#250a00",
                     fontFamily: sf,
@@ -227,10 +227,10 @@ export function SubscribePreview({ product: p }: Props) {
                       key={al}
                       style={{
                         display: "inline-block",
-                        padding: "4px 11px",
+                        padding: "3px 10px",
                         border: "1px solid #e6863f",
                         borderRadius: 100,
-                        fontSize: 11,
+                        fontSize: 10.5,
                         color: "#e6863f",
                         fontFamily: sf,
                       }}
@@ -242,16 +242,16 @@ export function SubscribePreview({ product: p }: Props) {
               )}
             </div>
 
-            {/* 가격 */}
+            {/* 가격 — H2, 제목보다 한 단계 아래 */}
             {priceStr && (
               <div
                 data-field-id="field-price"
                 style={{
-                  marginTop: 20,
-                  fontSize: 26,
+                  marginTop: 18,
+                  fontSize: 21,
                   fontWeight: 700,
                   color: "#250a00",
-                  letterSpacing: -0.5,
+                  letterSpacing: -0.4,
                   fontFamily: sf,
                 }}
               >
@@ -303,7 +303,7 @@ export function SubscribePreview({ product: p }: Props) {
                           </span>
                           <span
                             style={{
-                              fontSize: 13,
+                              fontSize: 12.5,
                               fontWeight: 700,
                               color: "#250a00",
                               fontFamily: sf,
@@ -316,7 +316,7 @@ export function SubscribePreview({ product: p }: Props) {
                         {s.desc && (
                           <div
                             style={{
-                              fontSize: 12,
+                              fontSize: 11.5,
                               color: "rgba(0,0,0,0.55)",
                               lineHeight: 1.55,
                               paddingLeft: 26,
@@ -359,10 +359,10 @@ export function SubscribePreview({ product: p }: Props) {
                       borderBottom: "1px solid #e8e2e2",
                     }}
                   >
-                    <span style={{ fontSize: 13, color: "#250a00", fontFamily: sf }}>{nm}</span>
+                    <span style={{ fontSize: 12.5, color: "#250a00", fontFamily: sf }}>{nm}</span>
                     <span
                       style={{
-                        fontSize: 13,
+                        fontSize: 11.5,
                         color: "rgba(0,0,0,0.38)",
                         fontFamily: sf,
                         marginLeft: 12,
@@ -407,8 +407,8 @@ export function SubscribePreview({ product: p }: Props) {
                 data-field-id={fid}
                 style={{ background: "#fff", padding: "14px 8px", textAlign: "center" }}
               >
-                <div style={{ fontSize: 16, fontWeight: 700, color: "#250a00", fontFamily: sf, lineHeight: 1.2 }}>{val}</div>
-                <div style={{ fontSize: 9, color: "rgba(0,0,0,0.38)", marginTop: 4, fontFamily: sf }}>{label}</div>
+                <div style={{ fontSize: 14.5, fontWeight: 700, color: "#250a00", fontFamily: sf, lineHeight: 1.2 }}>{val}</div>
+                <div style={{ fontSize: 9, color: "rgba(0,0,0,0.4)", marginTop: 4, fontFamily: sf, letterSpacing: 0.3 }}>{label}</div>
               </div>
             ))}
           </div>
@@ -422,7 +422,7 @@ export function SubscribePreview({ product: p }: Props) {
                 <div style={{ marginBottom: 8, fontSize: 9, letterSpacing: 3, color: "rgba(0,0,0,0.35)", fontFamily: mono }}>
                   DESCRIPTION
                 </div>
-                <div style={{ fontSize: 13, color: "#444", lineHeight: 1.7, whiteSpace: "pre-wrap", fontFamily: sf }}>
+                <div style={{ fontSize: 12.5, color: "#444", lineHeight: 1.7, whiteSpace: "pre-wrap", fontFamily: sf }}>
                   {p.description}
                 </div>
               </div>
@@ -437,7 +437,7 @@ export function SubscribePreview({ product: p }: Props) {
                 <div style={{ marginBottom: 8, fontSize: 9, letterSpacing: 3, color: "rgba(0,0,0,0.35)", fontFamily: mono }}>
                   COOKING TIP
                 </div>
-                <div style={{ fontSize: 13, color: "#444", lineHeight: 1.7, whiteSpace: "pre-wrap", fontFamily: sf }}>
+                <div style={{ fontSize: 12.5, color: "#444", lineHeight: 1.7, whiteSpace: "pre-wrap", fontFamily: sf }}>
                   {p.cooking_tip}
                 </div>
               </div>
@@ -481,10 +481,10 @@ export function SubscribePreview({ product: p }: Props) {
                           borderBottom: "1px solid #e8e2e2",
                         }}
                       >
-                        <div style={{ fontSize: 11, color: "rgba(0,0,0,0.45)", fontFamily: sf, fontWeight: 600 }}>
+                        <div style={{ fontSize: 10.5, color: "rgba(0,0,0,0.45)", fontFamily: sf, fontWeight: 600 }}>
                           {label}
                         </div>
-                        <div style={{ fontSize: 12, color: "rgba(0,0,0,0.7)", fontFamily: sf, lineHeight: 1.6, wordBreak: "break-word", whiteSpace: "pre-wrap" }}>
+                        <div style={{ fontSize: 11.5, color: "rgba(0,0,0,0.7)", fontFamily: sf, lineHeight: 1.6, wordBreak: "break-word", whiteSpace: "pre-wrap" }}>
                           {val}
                         </div>
                       </div>
@@ -500,12 +500,13 @@ export function SubscribePreview({ product: p }: Props) {
               data-field-id="field-hashtags"
               style={{
                 marginTop: 24,
-                paddingTop: 16,
+                paddingTop: 14,
                 borderTop: "1px solid #e8e2e2",
-                fontSize: 12,
+                fontSize: 10.5,
                 color: "#6e5035",
                 fontFamily: sf,
                 lineHeight: 1.6,
+                letterSpacing: 0.2,
               }}
             >
               {p.hashtags}
