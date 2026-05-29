@@ -529,16 +529,16 @@
     .tab-copy .preview-title {
       font-size: 38px;
       font-weight: 700;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       color: var(--text-primary);
       line-height: 1.6;
       text-align: center;
     }
 
     .tab-copy .preview-subtitle {
-      font-size: 18px;
+      font-size: 10px;
       font-weight: 600;
-      margin-bottom: 10px;
+      margin-bottom: 14px;
       color: #6e5035;
       letter-spacing: 1.5px;
       text-transform: uppercase;
@@ -546,7 +546,7 @@
     }
 
     .tab-copy .preview-text {
-      font-size: 18px;
+      font-size: 16px;
       line-height: 1.6;
       color: var(--text-secondary);
       text-align: center;
@@ -573,12 +573,12 @@
     }
 
     .tab-copy .preview-stat-unit {
-      font-size: 22px;
+      font-size: 20px;
       color: #6e5035;
     }
 
     .tab-copy .preview-stat-label {
-      font-size: 17px;
+      font-size: 14px;
       color: var(--text-dim);
       margin-top: 8px;
     }
@@ -587,7 +587,8 @@
       display: flex;
       justify-content: center;
       gap: 24px;
-      margin-top: 72px;
+      margin-top: 36px;          /* 위로 올리기 (72 → 36) */
+      margin-bottom: 80px;       /* 하단 여백 추가 */
       flex-wrap: wrap;
       max-width: 468px;
       margin-left: auto;
@@ -614,15 +615,17 @@
     }
 
     .tab-copy .preview-circle-sub {
-      font-size: 14px;
+      font-size: 12px;
       color: rgba(252,250,248,0.7);
       margin-top: 4px;
     }
 
     .tab-copy .preview-strengths {
       display: flex;
-      flex-direction: column;
-      gap: 32px;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 28px;
       margin-top: 72px;
       width: 100%;
     }
@@ -630,9 +633,13 @@
     .tab-copy .preview-strength-item {
       display: flex;
       flex-direction: column;
-      text-align: left;
+      text-align: center;
       border: none;
       border-radius: 0;
+      /* 한 줄 최대 3개. 1개일 땐 가운데. 화면 좁아지면 자연스럽게 줄바꿈 */
+      flex: 0 1 calc((100% - 56px) / 3);
+      max-width: 300px;
+      min-width: 200px;
     }
 
     /* 라임 섹션 — 배지 반전 (블랙 배지) */
@@ -660,7 +667,7 @@
 
     .tab-copy .preview-strength-item .strength-img {
       width: 100%;
-      aspect-ratio: 16 / 7;
+      aspect-ratio: 4 / 3;
       background: #b4b4b4;
       border-radius: 12px;
       display: flex;
@@ -676,7 +683,8 @@
     }
 
     .tab-copy .preview-strength-text {
-      padding: 12px 24px 28px;
+      padding: 14px 8px 8px;
+      text-align: center;
     }
 
     .tab-copy .preview-strength-num {
@@ -688,7 +696,7 @@
     }
 
     .tab-copy .preview-strength-title {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
       margin-bottom: 4px;
       color: var(--text-primary);
@@ -696,24 +704,86 @@
     }
 
     .tab-copy .preview-strength-desc {
-      font-size: 15px;
+      font-size: 13px;
       color: #666;
-      line-height: 1.35;
+      line-height: 1.4;
     }
 
     .tab-copy .preview-reviews {
       display: flex;
       flex-direction: column;
       gap: 0;
-      margin-top: 54px;
+      margin-top: 0;              /* 리뷰 리스트 더 위로 (subtitle 하단 여백 24만 사이 띄움) */
       max-width: 680px;
       margin-left: auto;
       margin-right: auto;
     }
 
+    /* 리뷰 / QnA 공용 서브타이틀 — 좌우 가로선 장식 포함 */
+    .tab-copy .preview-review-subtitle,
+    .tab-copy .preview-qna-subtitle {
+      font-size: 22px;
+      line-height: 1.55;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 36px auto 24px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    /* 좌우 가로 선 장식 — 에디토리얼 무드 */
+    .tab-copy .preview-review-subtitle::before,
+    .tab-copy .preview-review-subtitle::after,
+    .tab-copy .preview-qna-subtitle::before,
+    .tab-copy .preview-qna-subtitle::after {
+      content: "";
+      flex: 0 0 64px;
+      height: 2px;
+      background-color: #6e5035;
+      opacity: 0.5;
+    }
+
+    .preview-mobile .preview-review-subtitle,
+    .preview-mobile .preview-qna-subtitle {
+      font-size: 15px !important;
+      margin: 24px auto 18px !important;
+    }
+    .preview-mobile .preview-review-subtitle,
+    .preview-mobile .preview-qna-subtitle {
+      gap: 12px !important;
+    }
+    .preview-mobile .preview-review-subtitle::before,
+    .preview-mobile .preview-review-subtitle::after,
+    .preview-mobile .preview-qna-subtitle::before,
+    .preview-mobile .preview-qna-subtitle::after {
+      flex: 0 0 28px !important;
+      height: 1.5px !important;
+    }
+
+    /* Q&A 항목 — subtitle과 동일한 사이즈 (22 / 모바일 15) */
+    .tab-copy .preview-qna-question {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #250a00;
+      line-height: 1.5;
+    }
+    .tab-copy .preview-qna-answer {
+      font-size: 22px;
+      color: #666;
+      line-height: 1.55;
+    }
+    .preview-mobile .preview-qna-question,
+    .preview-mobile .preview-qna-answer {
+      font-size: 15px !important;
+    }
+
     .tab-copy .preview-review-item {
       padding: 16px 0;
-      font-size: 18px;
+      font-size: 15px;
       line-height: 1.6;
       color: #250a00;
       text-align: center;
@@ -739,16 +809,17 @@
     }
 
     .tab-copy .preview-serving-title {
-      font-size: 19px;
+      font-size: 16px;
       font-weight: 700;
       margin-top: 14px;
       color: var(--text-primary);
     }
 
     .tab-copy .preview-serving-desc {
-      font-size: 14px;
+      font-size: 12px;
       color: #666;
       margin-top: 6px;
+      line-height: 1.5;
     }
 
     .tab-copy .preview-ingredient-tags {
@@ -790,14 +861,14 @@
       background: #fcfaf8;
       border: none;
       border-radius: 28px;
-      font-size: 17px;
+      font-size: 14px;
       color: #333;
     }
 
     .tab-copy .preview-process-step .step-num {
       font-weight: 700;
       color: #6e5035;
-      font-size: 19px;
+      font-size: 16px;
       flex-shrink: 0;
     }
 
@@ -913,14 +984,14 @@
     }
 
     .tab-copy .preview-cert-name {
-      font-size: 17px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--text-primary);
       white-space: nowrap;
     }
 
     .tab-copy .preview-cert-desc {
-      font-size: 14px;
+      font-size: 12px;
       color: #666;
       font-weight: 400;
     }
@@ -2615,7 +2686,7 @@
     }
 
     .tab-subscribe .preview-subtitle {
-      font-size: 18px;
+      font-size: 14px;
       font-weight: 600;
       margin-bottom: 10px;
       color: #dcfd4a;
@@ -2625,7 +2696,7 @@
     }
 
     .tab-subscribe .preview-text {
-      font-size: 18px;
+      font-size: 14px;
       line-height: 1.6;
       color: rgba(253,251,243,0.65);
       text-align: center;
@@ -2889,7 +2960,7 @@ html, body {
   margin: 0;
 }
 .tab-copy .preview-section {
-  padding: 48px 32px;
+  padding: 72px 40px 108px;   /* 상 72 / 좌우 40 / 하 108 — 섹션 끝 여백 확장 */
 }
 
 /* Resizable divider between pane-edit and pane-right */
@@ -3725,24 +3796,44 @@ html, body {
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(37, 10, 0, 0.15);
 }
-/* Tighten the preview's internal padding when in mobile frame */
+/* 모바일 미리보기 — 데스크톱과 동일한 위계 비율로 여백 유지 */
 .preview-mobile .preview-section {
-  padding: 28px 18px;
+  padding: 48px 22px 72px !important;   /* 상 48 / 좌우 22 / 하 72 — 섹션 끝 여백 확장 */
+}
+.preview-mobile .preview-badge {
+  margin-bottom: 14px !important;
+  width: 26px !important;
+  height: 26px !important;
+  font-size: 13px !important;
+}
+.preview-mobile .preview-subtitle {
+  font-size: 9px !important;
+  letter-spacing: 1.2px !important;
+  margin-bottom: 10px !important;
 }
 .preview-mobile .preview-title {
   font-size: 20px !important;
   line-height: 1.3 !important;
+  margin-bottom: 12px !important;
 }
 .preview-mobile .preview-text {
-  font-size: 13px !important;
-  line-height: 1.5 !important;
+  font-size: 12px !important;
+  line-height: 1.55 !important;
 }
 .preview-mobile .preview-stat-number {
   font-size: 28px !important;
 }
+.preview-mobile .preview-stat-unit {
+  font-size: 14px !important;
+}
+.preview-mobile .preview-stat-label {
+  font-size: 11px !important;
+}
 .preview-mobile .preview-circles {
   flex-wrap: wrap;
   gap: 8px !important;
+  margin-top: 20px !important;     /* 위로 올리기 */
+  margin-bottom: 48px !important;  /* 하단 여백 추가 */
 }
 .preview-mobile .preview-circle {
   width: 80px !important;
@@ -3750,6 +3841,48 @@ html, body {
 }
 .preview-mobile .preview-circle-main {
   font-size: 16px !important;
+}
+.preview-mobile .preview-circle-sub {
+  font-size: 10px !important;
+}
+.preview-mobile .preview-strengths {
+  flex-direction: column !important;
+  gap: 24px !important;
+  margin-top: 36px !important;
+}
+.preview-mobile .preview-strength-item {
+  flex: 1 1 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+.preview-mobile .preview-strength-title {
+  font-size: 14px !important;
+}
+.preview-mobile .preview-strength-desc {
+  font-size: 11px !important;
+}
+.preview-mobile .preview-serving-title {
+  font-size: 13px !important;
+}
+.preview-mobile .preview-serving-desc {
+  font-size: 11px !important;
+}
+.preview-mobile .preview-review-item {
+  font-size: 13px !important;
+  padding: 12px 0 !important;
+}
+.preview-mobile .preview-process-step {
+  font-size: 12px !important;
+  padding: 8px 18px !important;
+}
+.preview-mobile .preview-process-step .step-num {
+  font-size: 14px !important;
+}
+.preview-mobile .preview-cert-name {
+  font-size: 13px !important;
+}
+.preview-mobile .preview-cert-desc {
+  font-size: 11px !important;
 }
 .preview-mobile .preview-servings {
   flex-direction: column;

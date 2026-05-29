@@ -263,17 +263,30 @@ export function StorePreview({ product }: Props) {
       {/* 9. Strength */}
       <div className="preview-section preview-sec-sand" data-section-id="strength">
         <div className="preview-badge">9</div>
-        <div className="preview-title" data-field-id="strength_summary_title">{nl2br(f("strength_summary_title"))}</div>
-        <div className="preview-subtitle" data-field-id="strength_quote" style={{ letterSpacing: 0, textTransform: "none", color: "#555" }}>
+        <div className="preview-title" data-field-id="strength_summary_title">
+          {/* strength_summary_title이 비어있으면 활성 원 개수로 자동 생성 */}
+          {nl2br(
+            f("strength_summary_title") ||
+              `특별한 점 ${[1, 2, 3, 4, 5].filter(
+                (i) => f(`strength_circle${i}_main`) || f(`strength_circle${i}_sub`),
+              ).length}가지`,
+          )}
+        </div>
+        <div className="preview-text" data-field-id="strength_quote">
           {nl2br(f("strength_quote"))}
         </div>
         <div className="preview-circles">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="preview-circle" data-field-id={`strength_circle${i}_main`}>
-              <div className="preview-circle-main">{f(`strength_circle${i}_main`)}</div>
-              <div className="preview-circle-sub" data-field-id={`strength_circle${i}_sub`}>{f(`strength_circle${i}_sub`)}</div>
-            </div>
-          ))}
+          {[1, 2, 3, 4, 5].map((i) => {
+            const main = f(`strength_circle${i}_main`);
+            const sub = f(`strength_circle${i}_sub`);
+            if (!main && !sub) return null;
+            return (
+              <div key={i} className="preview-circle" data-field-id={`strength_circle${i}_main`}>
+                <div className="preview-circle-main">{main}</div>
+                <div className="preview-circle-sub" data-field-id={`strength_circle${i}_sub`}>{sub}</div>
+              </div>
+            );
+          })}
         </div>
         <div className="preview-strengths">
           {[1, 2, 3, 4, 5].map((i) => {
@@ -308,7 +321,7 @@ export function StorePreview({ product }: Props) {
         <div style={{ margin: "0 -32px", padding: "0 16px" }}>
           <ImageBlock value={f("reveal_image")} height="480px" fallback="리빌 이미지" fieldId="reveal_image" />
         </div>
-        <div data-field-id="reveal_quote" style={{ fontSize: 26, fontWeight: 700, margin: "24px 0 14px", textAlign: "center", color: "#250a00" }}>
+        <div data-field-id="reveal_quote" style={{ fontSize: 22, fontWeight: 700, margin: "24px 0 14px", textAlign: "center", color: "#250a00" }}>
           {nl2br(f("reveal_quote"))}
         </div>
         <div className="preview-text" data-field-id="reveal_body">{nl2br(f("reveal_body"))}</div>
@@ -335,7 +348,7 @@ export function StorePreview({ product }: Props) {
       <div className="preview-section preview-sec-lime" data-section-id="review">
         <div className="preview-badge">11</div>
         <div className="preview-title" data-field-id="review_title">{nl2br(f("review_title"))}</div>
-        <div className="preview-text" data-field-id="review_subtitle" style={{ marginBottom: 20 }}>{nl2br(f("review_subtitle"))}</div>
+        <div className="preview-review-subtitle" data-field-id="review_subtitle">{nl2br(f("review_subtitle"))}</div>
         <div className="preview-reviews">
           {[1, 2, 3, 4, 5, 6, 7].map((i) => {
             const r = f(`review_${i}`);
@@ -353,18 +366,18 @@ export function StorePreview({ product }: Props) {
       <div className="preview-section" data-section-id="qna">
         <div className="preview-badge">12</div>
         <div className="preview-title" data-field-id="qna_title">{nl2br(f("qna_title"))}</div>
-        <div className="preview-text" data-field-id="qna_subtitle" style={{ marginBottom: 24 }}>{nl2br(f("qna_subtitle"))}</div>
-        <div style={{ maxWidth: 600, margin: "0 auto", textAlign: "left" }}>
+        <div className="preview-qna-subtitle" data-field-id="qna_subtitle">{nl2br(f("qna_subtitle"))}</div>
+        <div style={{ maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
           {[1, 2, 3].map((i) => {
             const q = f(`qna_q${i}`);
             const a = f(`qna_a${i}`);
             if (!q) return null;
             return (
-              <div key={i} style={{ padding: "18px 0", borderBottom: "1px solid #c9bcbe" }}>
-                <div data-field-id={`qna_q${i}`} style={{ fontWeight: 700, marginBottom: 10, color: "#250a00", fontSize: 18 }}>
+              <div key={i} style={{ padding: "20px 0", borderBottom: "1px solid #c9bcbe" }}>
+                <div data-field-id={`qna_q${i}`} className="preview-qna-question">
                   Q. {q}
                 </div>
-                <div data-field-id={`qna_a${i}`} style={{ color: "#666", fontSize: 17, lineHeight: 1.6 }}>
+                <div data-field-id={`qna_a${i}`} className="preview-qna-answer">
                   A. {nl2br(a)}
                 </div>
               </div>
