@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EditorNameModal } from "@/components/EditorNameModal";
 import { ProductSidebar } from "@/components/ProductSidebar";
 import { SubscribePreview } from "@/components/SubscribePreview";
@@ -25,6 +25,10 @@ export default function SubscribePage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [viewport, setViewport] = useState<"desktop" | "mobile">("desktop");
+
+  const editScrollRef = useRef<HTMLDivElement>(null);
+  const previewScrollRef = useRef<HTMLDivElement>(null);
+  const syncingRef = useRef(false);
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -71,6 +75,65 @@ export default function SubscribePage() {
     setIsCreating(false);
     setSavedSnapshot(JSON.stringify(p));
     setError(null);
+    // Reset both panes to top when switching products
+    editScrollRef.current?.scrollTo({ top: 0 });
+    previewScrollRef.current?.scrollTo({ top: 0 });
+  }
+
+  /**
+   * Sync preview scroll position to current edit section.
+   * 양쪽에 매칭되는 data-section-id 마커를 기준으로 현재 편집 섹션의 진행률(0–1)을
+   * 동일한 비율로 미리보기 섹션 내부 위치에 매핑한다. 스토어 페이지와 동일 패턴.
+   */
+  function handleEditScroll() {
+    if (syncingRef.current) return;
+    const editEl = editScrollRef.current;
+    const previewEl = previewScrollRef.current;
+    if (!editEl || !previewEl) return;
+
+    const editSections = Array.from(
+      editEl.querySelectorAll<HTMLElement>("[data-section-id]"),
+    );
+    if (editSections.length === 0) return;
+
+    const editScrollY = editEl.scrollTop;
+
+    let idx = 0;
+    for (let i = 0; i < editSections.length; i++) {
+      if (editSections[i].offsetTop <= editScrollY) idx = i;
+      else break;
+    }
+
+    const currentEdit = editSections[idx];
+    const nextEdit = editSections[idx + 1];
+    const currentId = currentEdit.dataset.sectionId;
+    if (!currentId) return;
+
+    const currentPreview = previewEl.querySelector<HTMLElement>(
+      `[data-section-id="${currentId}"]`,
+    );
+    if (!currentPreview) return;
+
+    const nextId = nextEdit?.dataset.sectionId;
+    const nextPreview = nextId
+      ? previewEl.querySelector<HTMLElement>(`[data-section-id="${nextId}"]`)
+      : null;
+
+    const editStart = currentEdit.offsetTop;
+    const editEnd = nextEdit ? nextEdit.offsetTop : editEl.scrollHeight;
+    const editSpan = Math.max(1, editEnd - editStart);
+    const progress = Math.max(0, Math.min(1, (editScrollY - editStart) / editSpan));
+
+    const prevStart = currentPreview.offsetTop;
+    const prevEnd = nextPreview ? nextPreview.offsetTop : previewEl.scrollHeight;
+    const prevSpan = Math.max(1, prevEnd - prevStart);
+    const target = prevStart + progress * prevSpan;
+
+    syncingRef.current = true;
+    previewEl.scrollTop = target;
+    window.requestAnimationFrame(() => {
+      syncingRef.current = false;
+    });
   }
 
   function addProduct() {
@@ -174,7 +237,16 @@ export default function SubscribePage() {
               className="pane-edit"
               style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}
             >
-              <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
+              <div
+                ref={editScrollRef}
+                onScroll={handleEditScroll}
+                style={{
+                  flex: 1,
+                  overflowY: "auto",
+                  padding: 20,
+                  position: "relative",
+                }}
+              >
                 {loading && <div style={{ padding: 20 }}>불러오는 중...</div>}
                 {error && (
                   <div style={{ color: "var(--danger)", padding: 12, marginBottom: 12 }}>
@@ -227,7 +299,10 @@ export default function SubscribePage() {
                   </button>
                 </div>
               </div>
-              <div className={`preview-frame preview-${viewport}`}>
+              <div
+                ref={previewScrollRef}
+                className={`preview-frame preview-${viewport}`}
+              >
                 <div className="preview-content">
                   {draft && <SubscribePreview product={draft} />}
                 </div>

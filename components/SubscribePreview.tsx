@@ -32,7 +32,7 @@ export function SubscribePreview({ product }: Props) {
     <div style={S.outer}>
       <div className="sub-card-grid" style={S.card}>
         {/* LEFT: brand panel */}
-        <div style={S.left}>
+        <div style={S.left} data-section-id="image">
           <div>
             <div style={S.brandName}>SLUNCH</div>
             <div style={S.brandName}>FACTORY</div>
@@ -56,6 +56,7 @@ export function SubscribePreview({ product }: Props) {
 
         {/* RIGHT: details panel */}
         <div style={S.right}>
+          <div data-section-id="basic" />
           <div style={S.name}>{product.name}</div>
           {product.tagline && <div style={S.tagline}>{product.tagline}</div>}
 
@@ -75,6 +76,7 @@ export function SubscribePreview({ product }: Props) {
 
           <hr style={S.divider} />
 
+          <div data-section-id="selling" />
           {product.selling_points.length > 0 && (
             <>
               <div style={S.sectionLabel}>SELLING POINTS</div>
@@ -93,6 +95,7 @@ export function SubscribePreview({ product }: Props) {
             </>
           )}
 
+          <div data-section-id="nutrition" />
           <div style={S.sectionLabel}>INGREDIENTS</div>
           <div>
             {ingredients.length === 0 && (
@@ -135,6 +138,7 @@ export function SubscribePreview({ product }: Props) {
             </>
           )}
 
+          <div data-section-id="info" />
           {hasInfoFields(product) && (
             <>
               <div style={{ ...S.sectionLabel, marginTop: 28 }}>PRODUCT INFO</div>

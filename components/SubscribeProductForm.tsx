@@ -417,6 +417,7 @@ export function SubscribeProductForm({ product, onChange }: Props) {
 }
 
 function Section({
+  id,
   title,
   open,
   onToggle,
@@ -429,7 +430,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`form-section ${open ? "open" : ""}`}>
+    <div className={`form-section ${open ? "open" : ""}`} data-section-id={id}>
       <button type="button" onClick={onToggle} className="form-section-header">
         <span>{title}</span>
         <span className="form-section-caret">{open ? "▾" : "▸"}</span>
